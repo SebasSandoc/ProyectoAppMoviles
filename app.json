@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AppMovil",
-    "slug": "AppMovil",
+    "name": "KTrack",
+    "slug": "KTrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
