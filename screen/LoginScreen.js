@@ -17,7 +17,7 @@ export default function LoginScreen({navigation}){
                     <Text style={styles.text}>Ingresa tu contraseña</Text>
                     <TextInput placeholder='Contraseña'  placeholderTextColor='#7e7a7a' secureTextEntry={true} style ={styles.inputField}/>
 
-                    <Pressable onPress={()=>navigation.navigate("Profile") } 
+                    <Pressable onPress={()=>navigation.navigate("Home") } 
                     style={({ pressed }) => [
                     styles.buttonPri,
                     pressed && styles.buttonPriressed
