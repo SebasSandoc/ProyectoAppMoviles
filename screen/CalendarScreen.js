@@ -31,6 +31,10 @@ export default function CalendarScreen({navigation}){
     Inter_300Light
   })
 
+  const events = {
+    '2026-02-10': ['Tarea 1'],
+
+  }
 
     return(
         <View style={styles.container}>
@@ -38,15 +42,50 @@ export default function CalendarScreen({navigation}){
                 <Text style={styles.barText}>Calendario</Text>
             </View>
             <View style={{height:70}}></View>
-                <Calendar style = {{width: "100%"}}
+            
+                <Calendar 
+                
+                dayComponent={({date, state}) => {
+                    const dayEvents = events[date.dateString]; 
+
+                    return(
+                        <View style={{flex:1,alignItems:'center'}}>
+                            <Text style={{color:state === 'disabled' ? 'gray' : 'black'}}>
+                                {date.day}
+                            </Text>
+
+                            {dayEvents && (
+                                <View style={{
+                                    position:'absolute',
+                                     bottom:4,
+                                    marginTop:4,
+                                    backgroundColor:'#37CDD8',
+                                    paddingHorizontal:4,
+                                    borderRadius:4
+                                }}>
+                                    <Text style={{fontSize:10, color:'#fff'}}>
+                                    {dayEvents[0]}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    );
+                }}
+
+                style = {{width: "100%", flex:1}}
                 theme = {{
                     'stylesheet.calendar.main':{
+                        container: {
+                            paddingLeft: 0,
+                            paddingRight: 0,
+                            backgroundColor: '#fff'
+                        },
                         week:{
-
                             flexDirection: 'row',
                             justifyContent: 'space-between',
-                            height: 100,
-
+                            height: 90,
+                            
+                            backgroundColor: '#fff'
                         },
                         dayContainer: {
                             flex: 1,
