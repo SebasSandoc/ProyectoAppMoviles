@@ -41,7 +41,7 @@ export default function CalendarScreen({navigation}){
             <View style={styles.topbar}>
                 <Text style={styles.barText}>Calendario</Text>
             </View>
-            <View style={{height:70}}></View>
+            <View style={{height:70}}/>
             
                 <Calendar 
                 
