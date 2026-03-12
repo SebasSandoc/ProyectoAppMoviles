@@ -1,10 +1,18 @@
-import {View, Text, Button} from 'react-native'
+import {View, Text, StyleSheet} from 'react-native'
+
+
 
 export default function SettingsScreen({navigation}){
+
+    
+
     return(
-        <View>
-            <Text>Pagina configuracion</Text>
-            <Button title='Home Screen' onPress={()=>navigation.navigate("Home")}/>
+        <View style={styles.container}>
+            <View style={styles.topbar}>
+                <Text style={styles.barText}>Calendario</Text>
+            </View>
+            <View style={{height:70}}/>
         </View>
     );
 }
+

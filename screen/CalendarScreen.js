@@ -1,5 +1,5 @@
 
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Pressable} from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
@@ -49,15 +49,23 @@ export default function CalendarScreen({navigation}){
                     const dayEvents = events[date.dateString]; 
 
                     return(
-                        <View style={{flex:1,alignItems:'center'}}>
+                        <View style={{alignItems:'center'}}>
                             <Text style={{color:state === 'disabled' ? 'gray' : 'black'}}>
                                 {date.day}
                             </Text>
 
                             {dayEvents && (
-                                <View style={{
-                                    position:'absolute',
-                                     bottom:4,
+
+                                <Pressable
+                                    onPress={() =>
+                                        navigation.navigate('Task1', {
+                                        date: date.dateString,
+                                        event: dayEvents[0]
+                                        })
+                                    }
+
+                                style={{
+                                    
                                     marginTop:4,
                                     backgroundColor:'#37CDD8',
                                     paddingHorizontal:4,
@@ -66,7 +74,7 @@ export default function CalendarScreen({navigation}){
                                     <Text style={{fontSize:10, color:'#fff'}}>
                                     {dayEvents[0]}
                                     </Text>
-                                </View>
+                                </Pressable>
                             )}
                         </View>
                     );
