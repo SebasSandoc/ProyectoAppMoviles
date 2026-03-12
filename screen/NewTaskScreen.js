@@ -22,7 +22,7 @@ export default function NewTaskScreen({navigation}){
                 <View style={{height:70}}/>
                 <View style={styles.content}>
                     <Text style={styles.textLarge}>Nombre de la tarea:</Text>
-                    <TextInput placeholder='nombre de usuario' placeholderTextColor='#7e7a7a' style ={styles.inputField}/>
+                    <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}/>
                     <Text style={styles.textLarge}>Materia(s):</Text>
                     <View style={[styles.inputField]}><Text style={[styles.textsmall, {marginRight:5}]}>Seleccionar...</Text>
                     <Image source={require('../assets/ChevronDown.png')} style={{width:30,height:20, tintColor:'#4d4d4d', marginLeft:5}}/>

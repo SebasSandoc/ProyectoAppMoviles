@@ -25,13 +25,13 @@ export default function LoginScreen({navigation}){
                         <Text style={styles.buttonText}>Ingresar</Text>
                     </Pressable>
                     
-                    <Pressable onPress={()=>navigation.navigate("Profile") } 
+                    <Pressable onPress={()=>navigation.navigate("Register") } 
                     style={({ pressed }) => [
                     styles.buttonSec,
                     pressed && styles.buttonSecPressed
                     ]}>
                         <Text style={styles.buttonText}>Registrarme</Text>
-                    </Pressable>
+                    </Pressable >
                     
                     <View 
                         style={{
