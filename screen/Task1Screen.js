@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet,ScrollView,Pressable} from 'react-native'
+import {View, Text, StyleSheet,ScrollView,Pressable, Image} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
 
@@ -16,6 +16,7 @@ export default function Task1creen({navigation}){
         <View style={styles.container}>
             <View style={styles.topbar}>
                 <Text style={styles.barText}>Tarea 1</Text>
+                <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
             </View>
             <ScrollView>
                 <View style={{height:70}}/>
@@ -80,8 +81,10 @@ const styles = StyleSheet.create({
         width:'100%',
         height: 70,
         backgroundColor: '#8DDBA5',    
-        justifyContent: 'center',
-        paddingLeft: 20  
+        alignItems:'center',
+        flexDirection:'row',
+        padding:20, 
+        justifyContent:'space-between'  
         
         },
     barText:{
@@ -181,4 +184,5 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         textAlign:'center'
     },
+    
 });

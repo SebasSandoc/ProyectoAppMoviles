@@ -88,10 +88,10 @@ export default function HomeScreen({navigation}){
         </ScrollView>
         <View style={styles.navContainer}>
           <View style={styles.navBar}>
-            <Pressable onPress={()=>navigation.navigate("Calendar") } >
+            <Pressable onPress={()=>navigation.navigate("Calendar")}>
               <Image source={require('../assets/Calendar.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
             </Pressable>
-            <Pressable>
+            <Pressable onPress={()=>navigation.navigate("NewTask")}>
               <Image source={require('../assets/Add.png')} style={{width:60, height:60, tintColor:'#2cd43a'}}/>
             </Pressable>
             <Pressable>
