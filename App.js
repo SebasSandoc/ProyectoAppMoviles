@@ -14,6 +14,7 @@ import SettingsScreen from './screen/SettingsScreen';
 import Task1creen from './screen/Task1Screen';
 
 import { AuthContext, AuthProvider } from './context/AuthContext';
+import {TareaProvider} from './context/TareaContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,9 +39,11 @@ export default function App() {
   return (
 
     <AuthProvider>
-      <NavigationContainer>
-        <Control/>
-      </NavigationContainer>
+      <TareaProvider>
+        <NavigationContainer>
+          <Control/>
+        </NavigationContainer>
+      </TareaProvider>
     </AuthProvider>
   );
 }
