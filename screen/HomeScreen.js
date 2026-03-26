@@ -1,5 +1,7 @@
-import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
+import {tareas} from '../data/tareas';
+import TareaItem from '../components/TareaITem';
 
 export default function HomeScreen({navigation}){
 
@@ -22,47 +24,27 @@ export default function HomeScreen({navigation}){
               <Image source={require('../assets/applogo.png')} style={styles.img}/>
             </View>
             <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>Tareas pendientes</Text>
+
+            
             <View style={{marginTop:20}}>
-              <View style={styles.list}>
-                <Text style={[styles.text, {fontFamily:'Inter_500Medium'}]}>Tarea 1 </Text>              
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>16/02</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>-</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>Fisica</Text>
-                <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#BEEAB3'}}/>
-                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
-              </View>
-              <View style={{borderTopWidth: 1, borderTopColor:'#aaaaaa', }}/>
-
-              <View style={styles.list}>
-                <Text style={styles.text}>Tarea 2 </Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>19/02</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>-</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>Calculo</Text>
-                <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#f0e24d'}}/>
-                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
-              </View>
-              <View style={{borderTopWidth: 1, borderTopColor:'#aaaaaa', }}/>
-
-              <View style={styles.list}>
-                <Text style={styles.text}>Tarea 3 </Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>20/02</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>-</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>Escritura</Text>
-                <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#F89A9A'}}/>
-                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
-              </View>
-              <View style={{borderTopWidth: 1, borderTopColor:'#aaaaaa', }}/>
-
-              <View style={styles.list}>
-                <Text style={styles.text}>Tarea 4 </Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>30/03</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>-</Text>
-                <Text style={[styles.text, {color:'#3f3c3c'}]}>Estadistica</Text>
-                <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#BEEAB3'}}/>
-                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
-              </View>
-              <View style={{borderTopWidth: 1, borderTopColor:'#aaaaaa', }}/>
+              {tareas.length === 0 ? (
+                <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
+              ) :(
+                <FlatList
+                  data={tareas}
+                  keyExtractor={(item) => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item}) => (
+                    <TareaItem
+                      tarea={item}
+                      onVer={()=> navigation.navigate()}
+                    />
+                  )}
+                />
+              )}
             </View>
+
+
             <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center', marginTop:15}]}>Tareas finalizadas</Text>
               
             <View style={styles.finished}>

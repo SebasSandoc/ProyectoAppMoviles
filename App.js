@@ -27,9 +27,18 @@ function Control(){
       {usuario ? (
         <>
           <Stack.Screen name="Home" component={HomeScreen}/>
+          
         </>
       ) : (
-        <Stack.Screen name="Login" component={LoginScreen}/>
+        <>
+          <Stack.Screen name="Login" component={LoginScreen}/>
+          <Stack.Screen name="Register" component={RegisterScreen}/>
+          <Stack.Screen name="Profile" component={ProfileScreen}/>
+          <Stack.Screen name="Calendar" component={CalendarScreen}/>
+          <Stack.Screen name="NewTask" component={NewTaskScreen}/>    
+          <Stack.Screen name="Settings" component={SettingsScreen}/>
+          <Stack.Screen name="Task1" component={Task1creen}/>
+        </>       
       )}
     </Stack.Navigator>
   );
