@@ -1,8 +1,25 @@
-import {View, Text, Button, StyleSheet, TextInput, Pressable,Image,ScrollView,SafeAreaView } from 'react-native'
+import { useContext, useState } from 'react';
+import {View, Text, Button, StyleSheet, TextInput, Pressable,Image,ScrollView, Alert } from 'react-native'
+import { AuthContext } from '../context/AuthContext';
 
-export default function LoginScreen({navigation}){
+export default function LoginScreen(){
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    const {login} = useContext(AuthContext);
+
+    const loginManage= () => {
+        const ok = login(email, password);
+
+        if(!ok) {
+            Alert.alert("Error","login incorrecto")
+        }
+    }
+
+
     return(
-        <SafeAreaView>
+        <View>
             <View style={styles.topbar}>
                 <Text style= {styles.barText}>Iniciar sesion</Text>
             </View>
@@ -41,13 +58,13 @@ export default function LoginScreen({navigation}){
                             borderBottomWidth: 1,
                         }}
                     />
-                    <Pressable onPress={()=>navigation.navigate("Profile") }>
+                    <Pressable onPress={loginManage }>
                         <Text style ={[styles.text, {justifyContent:'center',alignItems:'center',textAlign:'center',fontWeight:'bold',fontSize:18}]}>Olvide mi contraseña</Text>
                     </Pressable>
                     
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
         
         
         
