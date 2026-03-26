@@ -6,11 +6,13 @@ export const AuthProvider  = ({children}) => {
     const [usuario, setUsuario] = useState(null);
 
     const login = (email, password) => {
+        console.log(email+"-"+password)
         if (email === "correo" && password === "1234") {
             setUsuario({email});
-            return true;
-            
+            console.log("permitido")
+            return true;         
         }
+        console.log("no permitido")
         return false;
     };
 

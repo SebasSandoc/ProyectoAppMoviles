@@ -15,7 +15,7 @@ export default function LoginScreen(){
         if(!ok) {
             Alert.alert("Error","login incorrecto")
         }
-    }
+    };
 
 
     return(
@@ -29,12 +29,12 @@ export default function LoginScreen(){
                         <Image source={require('../assets/applogo.png')} style={styles.img}/>
                     </View>
                     
-                    <Text style={styles.text}>Ingresa tu usuario</Text>
-                    <TextInput placeholder='nombre de usuario' placeholderTextColor='#7e7a7a' style ={styles.inputField}/>
+                    <Text style={styles.text}>Ingresa tu correo</Text>
+                    <TextInput placeholder='correo' placeholderTextColor='#7e7a7a' onChangeText={setEmail} style ={styles.inputField}/>
                     <Text style={styles.text}>Ingresa tu contraseña</Text>
-                    <TextInput placeholder='Contraseña'  placeholderTextColor='#7e7a7a' secureTextEntry={true} style ={styles.inputField}/>
+                    <TextInput placeholder='Contraseña'  placeholderTextColor='#7e7a7a' secureTextEntry={true} onChangeText={setPassword} style ={styles.inputField}/>
 
-                    <Pressable onPress={()=>navigation.navigate("Home") } 
+                    <Pressable onPress={loginManage} 
                     style={({ pressed }) => [
                     styles.buttonPri,
                     pressed && styles.buttonPriressed
