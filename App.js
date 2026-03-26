@@ -38,9 +38,9 @@ export default function App() {
   return (
 
     <AuthProvider>
-      <NavigationProvider>
+      <NavigationContainer>
         <Control/>
-      </NavigationProvider>
+      </NavigationContainer>
     </AuthProvider>
   );
 }
