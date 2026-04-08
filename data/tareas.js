@@ -4,7 +4,7 @@ export const tareas = [
         nombre: "tarea fisica",
         prioridad: "Baja",
         materias: ["Fisica"],
-        fechaMax: "02/02/2026 ",
+        fechaMax: "2026-02-02T00:00:00",
         notas: "tarea de fisica",
         finalizada: true
     },
@@ -13,7 +13,7 @@ export const tareas = [
         nombre: "tarea calculo",
         prioridad: "Media",
         materias: ["Calculo"],
-        fechaMax: "02/05/2026 23:59:59",
+        fechaMax: "2026-02-20T00:00:00",
         notas: "tarea de calculo",
         finalizada: false
     },
@@ -22,7 +22,7 @@ export const tareas = [
         nombre: "tarea escritura",
         prioridad: "Alta",
         materias: ["Fisica"],
-        fechaMax: "03/02/2026 23:59:59",
+        fechaMax: "2026-03-01T00:00:00",
         notas: "tarea 3",
         finalizada: false
     },
@@ -31,9 +31,9 @@ export const tareas = [
         nombre: "tarea estadistica",
         prioridad: "Media",
         materias: ["Estadistica"],
-        fechaMax: "03/15/2026 23:59:59",
+        fechaMax: "2026-03-15T00:00:00",
         notas: "tarea 4",
-        finalizada: false
+        finalizada: true
     },
     {
         id: 5,
@@ -41,15 +41,15 @@ export const tareas = [
         prioridad: "Alta",
         materias: ["Fisica"],
         fechaMax: "04/04/2026 ",
-        notas: "tarea de fisica",
-        finalizada: false
+        notas: "2026-04-02T00:00:00",
+        finalizada: true
     },
     {
         id: 6,
         nombre: "tarea calculo 2",
         prioridad: "Baja",
         materias: ["Calculo"],
-        fechaMax: "04/20/2026 ",
+        fechaMax: "2026-04-20T00:00:00",
         notas: "",
         finalizada: false
     }

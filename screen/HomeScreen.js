@@ -1,7 +1,8 @@
 import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import {tareas} from '../data/tareas';
-import TareaItem from '../components/TareaITem';
+import TareaItem from '../components/TareaItem';
+import FinalizadoItem from '../components/FinalizadoItem';
 
 export default function HomeScreen({navigation}){
 
@@ -11,6 +12,9 @@ export default function HomeScreen({navigation}){
     Inter_700Bold,
     Inter_300Light
   })
+
+  const tPendientes = tareas.filter(t => !t.finalizada);
+  const tFinalizadas = tareas.filter(t => t.finalizada);
 
 
     return(
@@ -31,7 +35,7 @@ export default function HomeScreen({navigation}){
                 <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
               ) :(
                 <FlatList
-                  data={tareas}
+                  data={tPendientes}
                   keyExtractor={(item) => item.id.toString()}
                   showsVerticalScrollIndicator={false}
                   renderItem={({item}) => (
@@ -45,28 +49,28 @@ export default function HomeScreen({navigation}){
             </View>
 
 
-            <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center', marginTop:15}]}>Tareas finalizadas</Text>
+        <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center', marginTop:15}]}>Tareas finalizadas</Text>
+
+        <View>
+          {tareas.length === 0 ? (
+            <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas finalizadas recientes</Text>
+          ):(
+            <FlatList
+            data={tFinalizadas}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+              <FinalizadoItem
+                tarea={item}
+                onVer={()=> navigation.navigate()}
+              />
+            )}
+            />
+          )}
+        </View>
               
-            <View style={styles.finished}>
-              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
-              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 5</Text>
-            </View>
-        
-            <View style={styles.finished}>
-              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
-              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 6</Text>
-            </View>
-
-            <View style={styles.finished}>
-              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
-              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 7</Text>
-            </View>
-
-            <View style={styles.finished}>
-              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
-              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 8</Text>
-            </View>
             
+        <View style={{height:100}}/>    
         </ScrollView>
         <View style={styles.navContainer}>
           <View style={styles.navBar}>

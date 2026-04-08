@@ -10,10 +10,21 @@ const [fontsLoaded] = useFonts({
         Inter_300Light
     })
 
+const fecha = new Date(tarea.fechaMax)
+
+const fechaFormato = fecha.
+    toLocaleString("es-ES", {
+        day: "numeric",
+        month: "long",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+
     return (
         <View style={styles.list}>
             <Text style={styles.nameText}>{tarea.nombre}</Text>
-            <Text style={styles.text}>{tarea.fechaMax}</Text>
+            <Text style={styles.text}>{fechaFormato}</Text>
             <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#BEEAB3'}}/>
             <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
         </View>
