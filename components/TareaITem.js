@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Button, Image, StyleSheet } from 'react-native'
+import { View, Text, Button, Image, StyleSheet, Pressable } from 'react-native'
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
 export default function TareaItem({ tarea, onVer }) {
@@ -10,24 +10,37 @@ const [fontsLoaded] = useFonts({
         Inter_300Light
     })
 
-const fecha = new Date(tarea.fechaMax)
+    const prioridadColor = {
+    Baja: "#2ecc71",
+    Media: "#f1c40f",
+    Alta: "#e74c3c"
+    };
 
-const fechaFormato = fecha.
-    toLocaleString("es-ES", {
-        day: "numeric",
-        month: "long",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-    });
+    const color = prioridadColor[tarea.prioridad] || "#999"
+
+    const fecha = new Date(tarea.fechaMax)
+
+    const fechaFormato = fecha.
+        toLocaleString("es-ES", {
+            day: "numeric",
+            month: "long",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
 
     return (
+        <Pressable onPress={onVer}>
         <View style={styles.list}>
+            
             <Text style={styles.nameText}>{tarea.nombre}</Text>
             <Text style={styles.text}>{fechaFormato}</Text>
-            <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:'#BEEAB3'}}/>
-            <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
+            <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:color}}/>
+            
+                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
+                       
         </View>
+        </Pressable> 
     )
 }
 

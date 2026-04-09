@@ -41,7 +41,7 @@ export default function HomeScreen({navigation}){
                   renderItem={({item}) => (
                     <TareaItem
                       tarea={item}
-                      onVer={()=> navigation.navigate()}
+                      onVer={()=> navigation.navigate("Task1",{tarea:item})}
                     />
                   )}
                 />

@@ -1,8 +1,11 @@
 import {View, Text, StyleSheet,ScrollView,Pressable, Image} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
+import {prioridades} from '../data/prioridades';
+import { materias } from '../data/materias';
+import { tareas } from '../data/tareas';
 
 
-export default function Task1creen({navigation}){
+export default function Task1creen({route}){
 
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -11,29 +14,68 @@ export default function Task1creen({navigation}){
         Inter_300Light
     })
 
+    const {tarea} = route.params;
+
+    const fecha = new Date(tarea.fechaMax)
+
+    const fechaFormato = fecha.
+        toLocaleString("es-ES", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+
+    const prioridadColor = {
+    Baja: "#2ecc71",
+    Media: "#f1c40f",
+    Alta: "#e74c3c"
+    };
+
+    const prioridadColorBorde = {
+    Baja: "#18924b",
+    Media: "#af9012",
+    Alta: "#992d21"
+    };
+
+    const color = prioridadColor[tarea.prioridad] || "#999"
+    const colorborde = prioridadColorBorde[tarea.prioridad] || "#999"
+
+    const materiaNombre = tarea.materias[0];
+
+    const materia = materias.find(
+        m => m.nombre.toLowerCase() === materiaNombre.toLowerCase()
+    );
+
+    const colorMat = materia ? materia.color :'#ccc';
 
     return(
-        <View style={styles.container}>
-            <View style={styles.topbar}>
-                <Text style={styles.barText}>Tarea 1</Text>
+        <View style={styles.container}> 
+            <View style={[styles.topbar,{backgroundColor:color}]}>
+                <Text style={styles.barText}>{tarea.nombre}</Text>
                 <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
             </View>
             <ScrollView>
                 <View style={{height:70}}/>
+                
                 <View style={styles.content}>
                     <Text style={styles.textLarge}>Fecha limite:</Text>
-                    <Text style={styles.textMedium}>Jueves 10 de Febrero de 2026</Text>
+                    <Text style={styles.textMedium}>{fechaFormato}</Text>
                     <Text style={styles.textLarge}>Materia(s):</Text>
-                    <View style={styles.subjectContainer}>
-                        <Text style={styles.subjectText}>Fisica</Text>
+                    <View style={[styles.subjectContainer, {backgroundColor:colorMat}]}>
+                        <Text style={styles.subjectText}>{tarea.materias[0]}</Text>
                     </View>
                     <Text style={styles.textLarge}>Prioridad:</Text>
-                    <View style={styles.priorityContainer}>
-                        <Text style={styles.subjectText}>Baja</Text>
+                    <View style={[styles.priorityContainer, {backgroundColor:color, borderColor:colorborde}]}>
+                        <Text style={styles.subjectText}>{tarea.prioridad}</Text>
                     </View>
                     <Text style={styles.textLarge}>Notas:</Text>
                     <View style={styles.NotesContainer}>
-                        <Text style={styles.textsmall}>Notas personales sobre la tarea</Text>
+                        <Text style={styles.textsmall}>{tarea.notas}</Text>
                     </View>
                     <Text style={{
                         fontFamily: 'Inter_400Regular',
