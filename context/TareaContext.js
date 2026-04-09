@@ -7,7 +7,7 @@ export const TareaProvider = ({children}) => {
     const [agenda, setAgenda] = useState([]);
 
     const agregarTarea = (tarea) => {
-        setAgenda([...agenda,producto]);
+        setAgenda([...agenda,tarea]);
     };
 
     const eliminarTarea = (id) => {

@@ -3,6 +3,8 @@ import {View, Text, StyleSheet, Pressable} from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { tareas } from '../data/tareas';
+import { useContext } from 'react';
+import { TareaContext } from '../context/TareaContext';
 
 
 LocaleConfig.locales['es'] = {
@@ -25,6 +27,10 @@ LocaleConfig.defaultLocale = 'es';
 
 export default function CalendarScreen({navigation}){
 
+    const {agenda} = useContext(TareaContext)
+
+    const listaTareas =[...tareas, ...agenda]
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -34,7 +40,10 @@ export default function CalendarScreen({navigation}){
 
   const events = { }
 
-  tareas.forEach((tarea) =>{
+
+  console.log("agenda:", agenda);
+  console.log("tareas:", tareas);
+  listaTareas.forEach((tarea) =>{
     const fecha = tarea.fechaMax.split("T")[0];
 
     if(!events[fecha]) {
@@ -54,7 +63,7 @@ export default function CalendarScreen({navigation}){
                 <Calendar 
                 
                 dayComponent={({date, state}) => {
-                    const dayTasks = events[date.dateString]; 
+                    const dayEvents = events[date.dateString]; 
 
                     return(
                         <View style={{alignItems:'center'}}>
@@ -62,7 +71,7 @@ export default function CalendarScreen({navigation}){
                                 {date.day}
                             </Text>
 
-                            {dayTasks && dayTasks.map((task) => (
+                            {dayEvents && dayEvents.map((task) => (
 
                                 <Pressable
                                     key={task.id}

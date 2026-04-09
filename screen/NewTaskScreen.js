@@ -1,5 +1,8 @@
 import {View, Text, StyleSheet,ScrollView,Pressable,TextInput, Image} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
+import { TareaContext } from '../context/TareaContext';
+import { useContext, useState } from 'react';
+import { materias } from '../data/materias';
 
 
 
@@ -12,6 +15,28 @@ export default function NewTaskScreen({navigation}){
         Inter_300Light
     })
 
+    const {agregarTarea} = useContext(TareaContext)
+
+    const [nombre, setNombre] = useState("");
+    const [fecha, setFecha] = useState("");
+    const [notas, setNotas] = useState("");
+
+    const guardarTarea = () => {
+        const fechaConv = `${fecha}T00:00:00`;
+
+        const nuevaTarea = {
+            id: Date.now(),
+            nombre: nombre,
+            prioridad: "Media",
+            materias: ["Calculo"],
+            fechaMax: fechaConv,
+            notas: notas,
+            finalizada: false
+        };
+
+        agregarTarea(nuevaTarea)
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.topbar}>
@@ -22,7 +47,10 @@ export default function NewTaskScreen({navigation}){
                 <View style={{height:70}}/>
                 <View style={styles.content}>
                     <Text style={styles.textLarge}>Nombre de la tarea:</Text>
-                    <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}/>
+                    <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}
+                        value={nombre}
+                        onChangeText={setNombre}
+                    />
                     <Text style={styles.textLarge}>Materia(s):</Text>
                     <View style={[styles.inputField]}><Text style={[styles.textsmall, {marginRight:5}]}>Seleccionar...</Text>
                     <Image source={require('../assets/ChevronDown.png')} style={{width:30,height:20, tintColor:'#4d4d4d', marginLeft:5}}/>
@@ -35,6 +63,13 @@ export default function NewTaskScreen({navigation}){
                     <View style={[styles.inputField]}><Text style={[styles.textsmall, {marginRight:5}]}>DD/MM/AA</Text>
                     <Image source={require('../assets/Calendar.png')} style={{width:30,height:30, tintColor:'#4d4d4d', marginLeft:5, margin:5}}/>
                     </View>
+
+                    <TextInput placeholder='AAAA-MM-DD' placeholderTextColor='#7e7a7a' style ={styles.inputField}
+                        value={fecha}
+                        onChangeText={setFecha}
+                    />
+
+
                     <Text style={styles.textLarge}>Prioridad:</Text>
                     <View style={{flexDirection:'Row', justifyContent:'space-between'}}>
                         <View style={styles.priorityContainer}>
@@ -49,9 +84,12 @@ export default function NewTaskScreen({navigation}){
                     </View>
                     <Text style={styles.textLarge}>Notas (opcional):</Text>
                     
-                    <TextInput placeholder='' placeholderTextColor='#7e7a7a' style ={styles.NotesContainer} multiline/>
+                    <TextInput placeholder='' placeholderTextColor='#7e7a7a' style ={styles.NotesContainer} multiline
+                        value={notas}
+                        onChangeText={setNotas}
+                    />
 
-                    <Pressable>
+                    <Pressable onPress={guardarTarea}>
                             <Text style={styles.ButtonDelete}>Crear tarea</Text>
                     </Pressable>
                 </View>

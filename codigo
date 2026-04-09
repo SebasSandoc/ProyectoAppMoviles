@@ -44,4 +44,25 @@
                 <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
               </View>
               <View style={{borderTopWidth: 1, borderTopColor:'#aaaaaa', }}/>
-  
+
+
+
+  <View style={styles.finished}>
+              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
+              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 5</Text>
+            </View>
+        
+            <View style={styles.finished}>
+              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
+              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 6</Text>
+            </View>
+
+            <View style={styles.finished}>
+              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
+              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 7</Text>
+            </View>
+
+            <View style={styles.finished}>
+              <Image source={require('../assets/check.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
+              <Text style={[styles.text,{fontSize:20, marginLeft:5}]}>Tarea 8</Text>
+            </View>
