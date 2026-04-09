@@ -3,6 +3,7 @@ import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Lig
 import { TareaContext } from '../context/TareaContext';
 import { useContext, useState } from 'react';
 import { materias } from '../data/materias';
+import { Picker } from '@react-native-picker/picker';
 
 
 
@@ -20,6 +21,8 @@ export default function NewTaskScreen({navigation}){
     const [nombre, setNombre] = useState("");
     const [fecha, setFecha] = useState("");
     const [notas, setNotas] = useState("");
+    const [prioridad, setPrioridad] = useState("Baja");
+    const [materia, setMateria] = useState("")
 
     const guardarTarea = () => {
         try {
@@ -28,8 +31,8 @@ export default function NewTaskScreen({navigation}){
         const nuevaTarea = {
             id: Date.now(),
             nombre: nombre,
-            prioridad: "Media",
-            materias: ["Calculo"],
+            prioridad: prioridad,
+            materias: [materia],
             fechaMax: fechaConv,
             notas: notas,
             finalizada: false
@@ -58,17 +61,31 @@ export default function NewTaskScreen({navigation}){
                         onChangeText={setNombre}
                     />
                     <Text style={styles.textLarge}>Materia(s):</Text>
-                    <View style={[styles.inputField]}><Text style={[styles.textsmall, {marginRight:5}]}>Seleccionar...</Text>
-                    <Image source={require('../assets/ChevronDown.png')} style={{width:30,height:20, tintColor:'#4d4d4d', marginLeft:5}}/>
-                    </View>
+                    
+             <View >
+            <Picker style={styles.inputField}
+              selectedValue={materia}
+              onValueChange={(itemValue) => setMateria(itemValue)}
+            >
+              <Picker.Item label="Seleccionar materia..." value="" />
+
+              {materias.map((materia) => (
+                <Picker.Item
+                  key={materia.id}
+                  label={materia.nombre}
+                  value={materia.nombre}
+                />
+              ))}
+            </Picker>
+          </View>
+
+                    
                     <View style={styles.subjectContainer}>
                     <Text style={styles.subjectText}>Estadistica</Text>
                     <Text style={[styles.textMedium,{fontFamily:'Inter_700Bold',marginLeft:5,color:'#fff'}]}>X</Text>
                     </View>
                     <Text style={styles.textLarge}>Fecha limite:</Text>
-                    <View style={[styles.inputField]}><Text style={[styles.textsmall, {marginRight:5}]}>DD/MM/AA</Text>
-                    <Image source={require('../assets/Calendar.png')} style={{width:30,height:30, tintColor:'#4d4d4d', marginLeft:5, margin:5}}/>
-                    </View>
+                    
 
                     <TextInput placeholder='AAAA-MM-DD' placeholderTextColor='#7e7a7a' style ={styles.inputField}
                         value={fecha}
@@ -78,15 +95,36 @@ export default function NewTaskScreen({navigation}){
 
                     <Text style={styles.textLarge}>Prioridad:</Text>
                     <View style={{flexDirection:'Row', justifyContent:'space-between'}}>
-                        <View style={styles.priorityContainer}>
+
+                        <Pressable
+                            onPress={()=> setPrioridad("Baja")}
+                            style={[
+                                styles.priorityContainer,
+                                prioridad === "Baja" && {backgroundColor: '#A8E6A1', borderWidth:2,borderColor:'#639b5d'}
+                            ]}
+                        >
                             <Text style={styles.subjectText}>Baja</Text>
-                        </View>
-                        <View style={[styles.priorityContainer,{backgroundColor:'#EEF0A8',borderWidth:0}]}>
-                            <Text style={[styles.subjectText,{color:'#000'}]}>Media</Text>
-                        </View>
-                        <View style={[styles.priorityContainer,{backgroundColor:'#F69191',borderWidth:0}]}>
-                            <Text style={[styles.subjectText,]}>Alta</Text>
-                        </View>
+                        </Pressable>
+
+                        <Pressable
+                            onPress={()=> setPrioridad("Media")}
+                            style={[
+                                styles.priorityContainer,
+                                prioridad === "Media" && {backgroundColor: '#EEF0A8', borderWidth:2, borderBlockColor:'#999b5d'}
+                            ]}
+                        >
+                            <Text style={styles.subjectText}>Media</Text>
+                        </Pressable>
+
+                        <Pressable
+                            onPress={()=> setPrioridad("Alta")}
+                            style={[
+                                styles.priorityContainer,
+                                prioridad === "Alta" && {backgroundColor: '#F69191', borderWidth:2,borderColor:'#aa5959'}
+                            ]}
+                        >
+                            <Text style={styles.subjectText}>Alta</Text>
+                        </Pressable>
                     </View>
                     <Text style={styles.textLarge}>Notas (opcional):</Text>
                     
@@ -98,6 +136,9 @@ export default function NewTaskScreen({navigation}){
                     <Pressable onPress={guardarTarea}>
                             <Text style={styles.ButtonDelete}>Crear tarea</Text>
                     </Pressable>
+
+                    
+
                 </View>
             </ScrollView>
         </View>       
@@ -166,9 +207,9 @@ const styles = StyleSheet.create({
     },
 
     priorityContainer:{
-        backgroundColor: '#46C37E',
+        backgroundColor: '#a4aaa7',
         borderWidth: 2,
-        borderColor: '#11743E',
+        borderColor: '#6a8074',
         borderRadius: 5,
         padding: 10,
         paddingHorizontal: 50,

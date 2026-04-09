@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView, TextInput, Modal } from 'react-native';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { useState } from 'react';
+import { useContext } from "react";
+import { AuthContext } from '../context/AuthContext';
 
 const FRECUENCIAS  = ['Sin Frecuencia', 'Cada 2 dias', 'Cada 3 dias', 'Cada 5 dias', 'Cada semana'];
 const NOTIFICACIONES = ['1 dia antes', '2 dias antes', '3 dias antes', '1 semana antes'];
@@ -12,6 +14,7 @@ const MATERIAS_INICIALES = [
   { nombre: 'Estadistica', color: '#9C27B0' },
   { nombre: 'Escritura',   color: '#FF5722' },
 ];
+
 
 function Dropdown({ valor, opciones, visible, onToggle, onSeleccionar }) {
   return (
@@ -34,6 +37,9 @@ function Dropdown({ valor, opciones, visible, onToggle, onSeleccionar }) {
 }
 
 export default function SettingsScreen({ navigation, route }) {
+
+  const { logout } = useContext(AuthContext);
+
   const username = route?.params?.username || 'Manuel';
   const correo   = 'manuel@correo.com';
 
@@ -137,7 +143,7 @@ export default function SettingsScreen({ navigation, route }) {
           </Pressable>
           <Pressable
             style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
-            onPress={() => navigation.navigate('Login')}
+            onPress={()=> logout()}
           >
             <Text style={styles.buttonOutText}>Cerrar sesion</Text>
           </Pressable>

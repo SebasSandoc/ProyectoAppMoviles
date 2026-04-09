@@ -32,13 +32,13 @@ function Control(){
           <Stack.Screen name="Calendar" component={CalendarScreen}/>
           <Stack.Screen name="NewTask" component={NewTaskScreen}/>
           <Stack.Screen name="ConfirmTask" component={ConfirmTaskScreen}/>
+          <Stack.Screen name="Profile" component={ProfileScreen}/>           
+          <Stack.Screen name="Settings" component={SettingsScreen}/>
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen}/>
           <Stack.Screen name="Register" component={RegisterScreen}/>
-          <Stack.Screen name="Profile" component={ProfileScreen}/>           
-          <Stack.Screen name="Settings" component={SettingsScreen}/>
           
         </>       
       )}
