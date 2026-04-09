@@ -2,6 +2,7 @@
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { tareas } from '../data/tareas';
 
 
 LocaleConfig.locales['es'] = {
@@ -31,10 +32,17 @@ export default function CalendarScreen({navigation}){
     Inter_300Light
   })
 
-  const events = {
-    '2026-02-10': ['Tarea 1'],
+  const events = { }
 
-  }
+  tareas.forEach((tarea) =>{
+    const fecha = tarea.fechaMax.split("T")[0];
+
+    if(!events[fecha]) {
+        events[fecha] = []
+    }
+
+    events[fecha].push(tarea)
+  })
 
     return(
         <View style={styles.container}>
@@ -46,7 +54,7 @@ export default function CalendarScreen({navigation}){
                 <Calendar 
                 
                 dayComponent={({date, state}) => {
-                    const dayEvents = events[date.dateString]; 
+                    const dayTasks = events[date.dateString]; 
 
                     return(
                         <View style={{alignItems:'center'}}>
@@ -54,13 +62,12 @@ export default function CalendarScreen({navigation}){
                                 {date.day}
                             </Text>
 
-                            {dayEvents && (
+                            {dayTasks && dayTasks.map((task) => (
 
                                 <Pressable
+                                    key={task.id}
                                     onPress={() =>
-                                        navigation.navigate('Task1', {
-                                        date: date.dateString,
-                                        event: dayEvents[0]
+                                        navigation.navigate('Task1', {tarea:task
                                         })
                                     }
 
@@ -72,10 +79,10 @@ export default function CalendarScreen({navigation}){
                                     borderRadius:4
                                 }}>
                                     <Text style={{fontSize:10, color:'#fff'}}>
-                                    {dayEvents[0]}
+                                    {task.nombre}
                                     </Text>
                                 </Pressable>
-                            )}
+                            ))}
                         </View>
                     );
                 }}

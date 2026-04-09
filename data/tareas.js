@@ -40,8 +40,8 @@ export const tareas = [
         nombre: "tarea fisica 2",
         prioridad: "Alta",
         materias: ["Fisica"],
-        fechaMax: "04/04/2026 ",
-        notas: "2026-04-02T00:00:00",
+        fechaMax: "2026-04-02T00:00:00",
+        notas: "",
         finalizada: true
     },
     {
