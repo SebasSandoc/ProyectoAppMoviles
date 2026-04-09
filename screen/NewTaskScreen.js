@@ -22,7 +22,8 @@ export default function NewTaskScreen({navigation}){
     const [notas, setNotas] = useState("");
 
     const guardarTarea = () => {
-        const fechaConv = `${fecha}T00:00:00`;
+        try {
+            const fechaConv = `${fecha}T00:00:00`;
 
         const nuevaTarea = {
             id: Date.now(),
@@ -35,7 +36,12 @@ export default function NewTaskScreen({navigation}){
         };
 
         agregarTarea(nuevaTarea)
-    }
+
+        navigation.navigate("ConfirmTask",{passed:true});
+        }catch (Error) {
+            navigation.navigate("ConfirmTask",{passed:false});
+        }
+    }   
 
     return(
         <View style={styles.container}>

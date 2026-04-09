@@ -12,6 +12,7 @@ import NewTaskScreen from './screen/NewTaskScreen';
 import RegisterScreen from './screen/RegisterScreen';
 import SettingsScreen from './screen/SettingsScreen';
 import Task1creen from './screen/Task1Screen';
+import ConfirmTaskScreen from './screen/ConfirmTaskScreen';
 
 import { AuthContext, AuthProvider } from './context/AuthContext';
 import {TareaProvider} from './context/TareaContext';
@@ -30,6 +31,7 @@ function Control(){
           <Stack.Screen name="Task1" component={Task1creen}/>
           <Stack.Screen name="Calendar" component={CalendarScreen}/>
           <Stack.Screen name="NewTask" component={NewTaskScreen}/>
+          <Stack.Screen name="ConfirmTask" component={ConfirmTaskScreen}/>
         </>
       ) : (
         <>
