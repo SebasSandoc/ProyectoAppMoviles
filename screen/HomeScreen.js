@@ -1,8 +1,10 @@
-import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList, ActivityIndicator} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
-import {tareas} from '../data/tareas';
+import {tareas as localTareas} from '../data/tareas';
 import TareaItem from '../components/TareaItem';
 import FinalizadoItem from '../components/FinalizadoItem';
+import { obtenerTareas } from '../services/tareaService';
+import React, { useEffect, useState } from 'react';
 
 export default function HomeScreen({navigation}){
 
@@ -13,8 +15,24 @@ export default function HomeScreen({navigation}){
     Inter_300Light
   })
 
-  const tPendientes = tareas.filter(t => !t.finalizada);
-  const tFinalizadas = tareas.filter(t => t.finalizada);
+  //const tPendientes = tareas.filter(t => !t.finalizada);
+  //const tFinalizadas = tareas.filter(t => t.finalizada);
+  const[tareas,setTareas] = useState([]);
+  const[loading,setLoading] = useState(true);
+
+  const cargar = async () => {
+    setLoading(true);
+    const data = await obtenerTareas();
+    setTareas(data || localTareas);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+
 
 
     return(
@@ -35,7 +53,7 @@ export default function HomeScreen({navigation}){
                 <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
               ) :(
                 <FlatList
-                  data={tPendientes}
+                  data={tareas}
                   keyExtractor={(item) => item.id.toString()}
                   showsVerticalScrollIndicator={false}
                   renderItem={({item}) => (
@@ -51,23 +69,7 @@ export default function HomeScreen({navigation}){
 
         <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center', marginTop:15}]}>Tareas finalizadas</Text>
 
-        <View>
-          {tareas.length === 0 ? (
-            <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas finalizadas recientes</Text>
-          ):(
-            <FlatList
-            data={tFinalizadas}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            renderItem={({item}) => (
-              <FinalizadoItem
-                tarea={item}
-                onVer={()=> navigation.navigate()}
-              />
-            )}
-            />
-          )}
-        </View>
+        
               
             
         <View style={{height:100}}/>    
