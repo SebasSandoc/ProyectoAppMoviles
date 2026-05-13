@@ -26,7 +26,8 @@ const [fontsLoaded] = useFonts({
             month: "long",
             hour: "numeric",
             minute: "2-digit",
-            hour12: true
+            hour12: true,
+            timeZone: "UTC"
         });
 
     return (

@@ -33,14 +33,20 @@ export const obtenerTareas = async () => {
 // POST - Crear producto
 export const crearTarea = async (tarea) => {
   try {
+
+    console.log(tarea)
+
     const payload = {
+      id: 0,
       nombre: tarea.nombre,
       prioridad: tarea.prioridad,
       materias: tarea.materias,
       fechaMax: tarea.fechaMax, 
       notas: tarea.notas || "",
-      finalizada: tarea.finalizada || ""
+      finalizada: tarea.finalizada ?? false
     };
+
+    console.log(payload)
 
     const res = await fetch(BASE_URL, {
       method: "POST",
@@ -51,6 +57,7 @@ export const crearTarea = async (tarea) => {
     });
 
     const text = await res.text();
+    console.log(text)
 
     let data;
     try {

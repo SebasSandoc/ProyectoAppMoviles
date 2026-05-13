@@ -79,7 +79,7 @@ export default function HomeScreen({navigation}){
             <Pressable onPress={()=>navigation.navigate("Calendar")}>
               <Image source={require('../assets/Calendar.png')} style={{width:50, height:50, tintColor:'#2cd43a'}}/>
             </Pressable>
-            <Pressable onPress={()=>navigation.navigate("NewTask")}>
+            <Pressable onPress={()=>navigation.navigate("NewTask", {recargar: cargar})}>
               <Image source={require('../assets/Add.png')} style={{width:60, height:60, tintColor:'#2cd43a'}}/>
             </Pressable>
             <Pressable onPress={()=>navigation.navigate("Settings")}>

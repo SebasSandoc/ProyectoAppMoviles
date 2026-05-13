@@ -4,10 +4,13 @@ import { TareaContext } from '../context/TareaContext';
 import { useContext, useState } from 'react';
 import { materias } from '../data/materias';
 import { Picker } from '@react-native-picker/picker';
+import { actualizarTarea, crearTarea } from '../services/tareaService';
 
 
 
-export default function NewTaskScreen({navigation}){
+export default function NewTaskScreen({route,navigation}){
+
+    const tarea = route.params?.tarea
 
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -16,15 +19,16 @@ export default function NewTaskScreen({navigation}){
         Inter_300Light
     })
 
-    const {agregarTarea} = useContext(TareaContext)
+    //const {agregarTarea} = useContext(TareaContext)
 
-    const [nombre, setNombre] = useState("");
-    const [fecha, setFecha] = useState("");
-    const [notas, setNotas] = useState("");
-    const [prioridad, setPrioridad] = useState("Baja");
-    const [materia, setMateria] = useState("")
+    const [nombre, setNombre] = useState(tarea?.nombre || "");
+    const [fechaMax, setFecha] = useState(tarea?.fechaMax || "");
+    const [notas, setNotas] = useState(tarea?.notas||"");
+    const [prioridad, setPrioridad] = useState(tarea?.prioridad || "");
+    const [materiaSel, setMateriaSel] = useState(tarea?.materias || "");
+    const [finalizada, setFinalizada] = useState(tarea?.finalizada || false)
 
-    const guardarTarea = () => {
+    /*const guardarTarea = () => {
         try {
             const fechaConv = `${fecha}T00:00:00`;
 
@@ -44,7 +48,30 @@ export default function NewTaskScreen({navigation}){
         }catch (Error) {
             navigation.navigate("ConfirmTask",{passed:false});
         }
-    }   
+    }*/   
+
+
+    const guardar = async () => {
+
+        const fechaFormateada = `${fechaMax}T12:00:00Z`;
+
+        const nuevo = {
+            nombre,
+            prioridad,
+            materias: [materiaSel],
+            fechaMax: fechaFormateada,
+            notas,
+            finalizada
+        }
+
+        if(tarea) {
+            await actualizarTarea(tarea.id, nuevo);
+        }else {
+            await crearTarea(nuevo);
+        }
+    }
+
+    
 
     return(
         <View style={styles.container}>
@@ -63,20 +90,20 @@ export default function NewTaskScreen({navigation}){
                     <Text style={styles.textLarge}>Materia(s):</Text>
                     
              <View >
-            <Picker style={styles.inputField}
-              selectedValue={materia}
-              onValueChange={(itemValue) => setMateria(itemValue)}
-            >
-              <Picker.Item label="Seleccionar materia..." value="" />
+            <Picker
+    selectedValue={materiaSel}
+    onValueChange={(itemValue) => setMateriaSel(itemValue)}
+>
+    <Picker.Item label="Seleccionar materia..." value="" />
 
-              {materias.map((materia) => (
-                <Picker.Item
-                  key={materia.id}
-                  label={materia.nombre}
-                  value={materia.nombre}
-                />
-              ))}
-            </Picker>
+    {materias.map((materia) => (
+        <Picker.Item
+            key={materia.id}
+            label={materia.nombre}
+            value={materia.nombre}
+        />
+    ))}
+</Picker>
           </View>
 
                     
@@ -88,7 +115,7 @@ export default function NewTaskScreen({navigation}){
                     
 
                     <TextInput placeholder='AAAA-MM-DD' placeholderTextColor='#7e7a7a' style ={styles.inputField}
-                        value={fecha}
+                        value={fechaMax}
                         onChangeText={setFecha}
                     />
 
@@ -133,7 +160,7 @@ export default function NewTaskScreen({navigation}){
                         onChangeText={setNotas}
                     />
 
-                    <Pressable onPress={guardarTarea}>
+                    <Pressable onPress={guardar}>
                             <Text style={styles.ButtonDelete}>Crear tarea</Text>
                     </Pressable>
 
