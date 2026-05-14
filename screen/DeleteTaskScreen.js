@@ -1,7 +1,11 @@
 import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
+import { eliminarTareaAPI } from '../services/tareaService';
 
-export default function ConfirmTaskScreen({route,navigation}){
+export default function DeleteTaskScreen({route,navigation}){
+
+    const tarea = route.params?.tarea
+    console.log(tarea)
 
     const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -10,18 +14,28 @@ export default function ConfirmTaskScreen({route,navigation}){
     Inter_300Light
   })
 
-  const passed = true
-
+ 
   return(
     <View style={styles.container}>
-        {passed ? (
-            <Text style={styles.text}>La tarea se guardo correctamente</Text>
-        ):(
-            <Text>Error al guardar la tarea</Text>
-        )}
+        <Text style={styles.text}>¿Esta seguro de eliminar esta tarea? esta accion no se puede deshacer</Text>
 
-        <Pressable onPress={()=>navigation.navigate("Home")} style={styles.ButtonPrimary}>
-            <Text style={styles.textButton}>Volver al inicio</Text>
+        <Pressable onPress={
+            async () => {
+                let eliminado
+
+                eliminado = await eliminarTareaAPI(tarea.id);
+                console.log(eliminado)
+                
+                if (eliminado) {
+                    console.log("creada correctamente")
+                    navigation.navigate("ConfirmTask")
+                }
+            }
+        } style={styles.ButtonPrimary}>
+            <Text style={styles.textButton}>ELIMINAR</Text>
+        </Pressable>
+        <Pressable onPress={()=> navigation.goBack()} style={styles.ButtonPrimary}>
+            <Text style={styles.textButton}>Cancelar</Text>
         </Pressable>
     </View>
   )

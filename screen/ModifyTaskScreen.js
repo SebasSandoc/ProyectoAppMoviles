@@ -8,9 +8,11 @@ import { actualizarTarea, crearTarea } from '../services/tareaService';
 
 
 
-export default function NewTaskScreen({route,navigation}){
+export default function ModifyTaskScreen({route,navigation}){
 
     const tarea = route.params?.tarea
+
+    console.log(tarea)
 
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -21,12 +23,14 @@ export default function NewTaskScreen({route,navigation}){
 
     //const {agregarTarea} = useContext(TareaContext)
 
-    const [nombre, setNombre] = useState(tarea?.nombre || "");
+    const [nombre, setNombre] = useState(tarea.nombre);
     const [fechaMax, setFecha] = useState(tarea?.fechaMax || "");
     const [notas, setNotas] = useState(tarea?.notas||"");
     const [prioridad, setPrioridad] = useState(tarea?.prioridad || "");
     const [materiaSel, setMateriaSel] = useState(tarea?.materias || "");
     const [finalizada, setFinalizada] = useState(tarea?.finalizada || false)
+  
+
 
     const guardar = async () => {
 
@@ -41,15 +45,15 @@ export default function NewTaskScreen({route,navigation}){
             finalizada
         }
 
-        let resultado
+        let modificada 
 
         if(tarea) {
-            await actualizarTarea(tarea.id, nuevo);
+           modificada = await actualizarTarea(tarea.id, nuevo);
         }else {
-           resultado =  await crearTarea(nuevo);
+            modificada = await crearTarea(nuevo);
         }
 
-        if (resultado) {
+        if (modificada){
             console.log("creada correctamente")
             navigation.navigate("ConfirmTask")
         }
@@ -60,7 +64,7 @@ export default function NewTaskScreen({route,navigation}){
     return(
         <View style={styles.container}>
             <View style={styles.topbar}>
-                <Text style={styles.barText}>Nueva tarea</Text>
+                <Text style={styles.barText}>Modificar</Text>
                  <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
             </View>
             <ScrollView>
@@ -75,19 +79,19 @@ export default function NewTaskScreen({route,navigation}){
                     
              <View >
             <Picker
-    selectedValue={materiaSel}
-    onValueChange={(itemValue) => setMateriaSel(itemValue)}
+                selectedValue={materiaSel}
+                onValueChange={(itemValue) => setMateriaSel(itemValue)}
 >
-    <Picker.Item label="Seleccionar materia..." value="" />
+                <Picker.Item label="Seleccionar materia..." value="" />
 
-    {materias.map((materia) => (
-        <Picker.Item
-            key={materia.id}
-            label={materia.nombre}
-            value={materia.nombre}
-        />
-    ))}
-</Picker>
+                {materias.map((materia) => (
+                    <Picker.Item
+                        key={materia.id}
+                        label={materia.nombre}
+                        value={materia.nombre}
+                    />
+                ))}
+            </Picker>
           </View>
 
                     
@@ -145,7 +149,7 @@ export default function NewTaskScreen({route,navigation}){
                     />
 
                     <Pressable onPress={guardar}>
-                            <Text style={styles.ButtonDelete}>Crear tarea</Text>
+                            <Text style={styles.ButtonDelete}>Modificar tarea</Text>
                     </Pressable>
 
                     

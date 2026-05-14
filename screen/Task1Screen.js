@@ -5,7 +5,7 @@ import { materias } from '../data/materias';
 import { tareas } from '../data/tareas';
 
 
-export default function Task1creen({route}){
+export default function Task1creen({route,navigation}){
 
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -26,7 +26,8 @@ export default function Task1creen({route}){
             year: "numeric",
             hour: "numeric",
             minute: "2-digit",
-            hour12: true
+            hour12: true,
+             timeZone: "UTC"
         });
 
 
@@ -96,11 +97,11 @@ export default function Task1creen({route}){
                         <Pressable style={[styles.ButtonPrimary,{marginRight:5}]}>
                             <Text style={styles.ButtonText}>Marcar como hecha</Text>
                         </Pressable>
-                        <Pressable style={[styles.ButtonSecondary,{marginLeft:5}]}>
+                        <Pressable onPress={()=> navigation.navigate("Modify", {tarea})} style={[styles.ButtonSecondary,{marginLeft:5}]}>
                             <Text style={styles.ButtonText}>Modificar Tarea</Text>
                         </Pressable>
                     </View>
-                    <Pressable>
+                    <Pressable onPress={()=> navigation.navigate("DeleteTask", {tarea})}>
                             <Text style={styles.ButtonDelete}>Eliminar tarea</Text>
                     </Pressable>
                 </View>

@@ -69,7 +69,7 @@ export const crearTarea = async (tarea) => {
     if (!res.ok) {
       throw new Error(data?.message || "Error al crear tarea");
     }
-
+    
     return data;
 
   } catch (error) {
