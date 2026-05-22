@@ -4,7 +4,8 @@ import {tareas as localTareas} from '../data/tareas';
 import TareaItem from '../components/TareaItem';
 import FinalizadoItem from '../components/FinalizadoItem';
 import { obtenerTareas } from '../services/tareaService';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 export default function HomeScreen({navigation}){
 
@@ -19,6 +20,9 @@ export default function HomeScreen({navigation}){
   //const tFinalizadas = tareas.filter(t => t.finalizada);
   const[tareas,setTareas] = useState([]);
   const[loading,setLoading] = useState(true);
+  const {usuario} = useContext(AuthContext)
+
+  console.log({usuario})
 
   const cargar = async () => {
     setLoading(true);
@@ -38,7 +42,7 @@ export default function HomeScreen({navigation}){
     return(
       <View style={styles.container}>
         <View style={styles.topbar}>
-          <Text style= {styles.barText}>Bienvenido: <Text  style= {{fontFamily:'Inter_300Light'}}>Manuel</Text></Text>
+          <Text style= {styles.barText}>Bienvenido: <Text  style= {{fontFamily:'Inter_300Light'}}>{usuario.nombre}</Text></Text>
         </View>
           
         <ScrollView>

@@ -9,7 +9,7 @@ export default function LoginScreen({navigation}){
     
     const {login} = useContext(AuthContext);
 
-    const loginManage= () => {
+    const loginManage=  async () => {
         const ok = login(email, password);
 
         if(!ok) {

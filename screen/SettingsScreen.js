@@ -40,6 +40,8 @@ export default function SettingsScreen({ navigation, route }) {
 
   const { logout } = useContext(AuthContext);
 
+  const {usuario} = useContext(AuthContext);
+
   const username = route?.params?.username || 'Manuel';
   const correo   = 'manuel@correo.com';
 
@@ -128,16 +130,16 @@ export default function SettingsScreen({ navigation, route }) {
         <Text style={styles.seccionTitulo}>Usuario</Text>
         <View style={styles.card}>
           <Text style={styles.campoLabel}>Nombre:</Text>
-          <Text style={styles.campoValor}>{username}</Text>
+          <Text style={styles.campoValor}>{usuario.nombre}</Text>
           <View style={styles.separador} />
           <Text style={styles.campoLabel}>Correo electronico:</Text>
-          <Text style={styles.campoValor}>{correo}</Text>
+          <Text style={styles.campoValor}>{usuario.correo}</Text>
         </View>
 
         <View style={styles.botonesRow}>
           <Pressable
             style={({ pressed }) => [styles.buttonPri, pressed && { backgroundColor: '#26793c' }]}
-            onPress={() => setModalCambiarDatos(true)}
+            onPress={()=>navigation.navigate("UpdateProfile")}
           >
             <Text style={styles.buttonText}>Cambiar datos</Text>
           </Pressable>

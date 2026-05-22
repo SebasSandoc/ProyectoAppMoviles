@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Image } from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
+import { useState } from 'react';
+import { crearUsuario } from '../services/usuarioService';
 
 
 
@@ -14,6 +16,37 @@ export default function RegisterScreen({navigation}){
     Inter_300Light
   })
 
+  const [nombre,setNombre] = useState("");
+  const [usuario, setUsuario] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [contrasenia, setContrasenia] = useState("");
+  const [confirmar, setConfirmar] = useState("");
+
+  const guardar = async () => {
+
+    if (contrasenia != confirmar) {
+      console.log("Contraseñas no coiniciden")
+      return
+    }
+
+    const nuevo = {
+      nombre,
+      usuario,
+      correo,
+      contrasenia
+    }
+
+    console.log(nuevo)
+
+    let status 
+
+    status = await crearUsuario(nuevo)
+
+    if (status) {
+      navigation.navigate("ConfirmRegister")
+    }
+  }
+
 
     return(
     <View style={styles.container}>
@@ -26,12 +59,20 @@ export default function RegisterScreen({navigation}){
           <Image source={require('../assets/applogo.png')} style={styles.img} />
         </View>
 
-        <Text style={styles.label}>Nombre de usuario:</Text>
+        <Text style={styles.label}>Nombre:</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Usuario"
           placeholderTextColor="#7e7a7a"
-          
+          onChangeText={setNombre}
+        />
+
+        <Text style={styles.label}>Nombre de usuario:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Nombre de suuario"
+          placeholderTextColor="#7e7a7a"
+          onChangeText={setUsuario}
         />
 
         <Text style={styles.label}>Correo electronico:</Text>
@@ -41,6 +82,7 @@ export default function RegisterScreen({navigation}){
           placeholderTextColor="#7e7a7a"
           keyboardType="email-address"
           autoCapitalize="none"
+          onChangeText={setCorreo}
         />
 
         <Text style={styles.label}>Contraseña:</Text>
@@ -49,6 +91,7 @@ export default function RegisterScreen({navigation}){
           placeholder="Contraseña"
           placeholderTextColor="#7e7a7a"
           secureTextEntry
+          onChangeText={setContrasenia}
         />
 
         <Text style={styles.label}>Confirma contraseña:</Text>
@@ -57,12 +100,13 @@ export default function RegisterScreen({navigation}){
           placeholder="Confirma tu contraseña"
           placeholderTextColor="#7e7a7a"
           secureTextEntry
+          onChangeText={setConfirmar}
         />
 
 
 
         <Pressable
-          onPress={()=>navigation.navigate("Home") }
+          onPress={guardar}
           style={({ pressed }) => [styles.buttonPri, pressed && { backgroundColor: '#26793c' }]}
         >
           <Text style={styles.buttonText}>Registrarme</Text>

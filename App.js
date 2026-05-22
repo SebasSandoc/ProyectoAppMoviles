@@ -15,6 +15,8 @@ import Task1Screen from './screen/Task1Screen';
 import ConfirmTaskScreen from './screen/ConfirmTaskScreen';
 import ModifyTaskScreen from './screen/ModifyTaskScreen';
 import DeleteTaskScreen from './screen/DeleteTaskScreen';
+import ConfirmRegisterScreen from './screen/ConfirmRegisterScreen';
+import UpdateProfileScreen from './screen/UpdateProfileScreen';
 
 import { AuthContext, AuthProvider } from './context/AuthContext';
 import {TareaProvider} from './context/TareaContext';
@@ -38,11 +40,13 @@ function Control(){
           <Stack.Screen name="Settings" component={SettingsScreen}/>
           <Stack.Screen name="Modify" component={ModifyTaskScreen}/>
           <Stack.Screen name="DeleteTask" component={DeleteTaskScreen}/>
+          <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen}/>
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen}/>
           <Stack.Screen name="Register" component={RegisterScreen}/>
+          <Stack.Screen name="ConfirmRegister" component={ConfirmRegisterScreen}/>
         </>       
       )}
     </Stack.Navigator>
