@@ -4,8 +4,8 @@ import { TareaContext } from '../context/TareaContext';
 import { useContext, useState } from 'react';
 import { materias } from '../data/materias';
 import { Picker } from '@react-native-picker/picker';
-import { actualizarUsuario, crearUsuario } from '../services/usuarioService';
 import { AuthContext } from '../context/AuthContext';
+import { eliminarTareaAPI } from '../services/tareaService';
 
 
 
@@ -59,7 +59,7 @@ export default function UpdateProfileScreen({route,navigation}){
             contrasenia: newContrasenia,
         }
 
-         modificada = await actualizarUsuario(usuario.id,nuevo);
+         modificada = await eliminarTareaAPI(usuario.id,nuevo);
 
         if (modificada){
             console.log("creada correctamente")
@@ -105,7 +105,10 @@ export default function UpdateProfileScreen({route,navigation}){
                         />
 
                         <Pressable onPress={guardar}>
-                            <Text style={styles.ButtonDelete}>Modificar tarea</Text>
+                            <Text style={styles.ButtonDelete}>Actualizar usuario</Text>
+                        </Pressable>
+                        <Pressable onPress={() => navigation.navigate("DeleteUser")}>
+                            <Text style={styles.ButtonDelete}>ELIMINAR USUARIO</Text>
                         </Pressable>
                 </View>
         </View>       
