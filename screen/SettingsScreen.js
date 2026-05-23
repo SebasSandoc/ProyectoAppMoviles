@@ -1,8 +1,11 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView, TextInput, Modal, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
-import { useState } from 'react';
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from '../context/AuthContext';
+import { materias as localMaterias } from '../data/materias';
+import { actualizarMateria, crearMateria, eliminarMateriaPI, obtenerMaterias } from '../services/materiaService';
+import MateriaItem from '../components/MateriaItem';
+import { Picker } from '@react-native-picker/picker';
 
 const FRECUENCIAS  = ['Sin Frecuencia', 'Cada 2 dias', 'Cada 3 dias', 'Cada 5 dias', 'Cada semana'];
 const NOTIFICACIONES = ['1 dia antes', '2 dias antes', '3 dias antes', '1 semana antes'];
@@ -41,79 +44,106 @@ export default function SettingsScreen({ navigation, route }) {
   const { logout } = useContext(AuthContext);
 
   const {usuario} = useContext(AuthContext);
+  const[loading,setLoading] = useState(true);
 
-  const username = route?.params?.username || 'Manuel';
-  const correo   = 'manuel@correo.com';
+  const [materias,setMaterias] = useState([])
+
+  const [materiaSel,setMateriaSel] = useState("")
+
+  const [visible,setVisible] = useState(false)
+  const [modificarVisible,setModificarVisible] = useState(false)
+  const [eliminarVisible,setEliminarVisible] = useState(false)
+
+  const [nombre,setNombre] = useState("")
+  const [color,setColor] = useState("")
+  const [notas,setNotas] = useState("")
 
   const [fontsLoaded] = useFonts({
-    Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light,
+    Inter_400Regular, 
+    Inter_500Medium, 
+    Inter_700Bold, 
+    Inter_300Light,
   });
 
+  const colorGroups = [
+    ['#ffcccc', '#ff9999', '#ff6666', '#ff3333', '#cc0000'], 
+    ['#ccffcc', '#99ff99', '#66ff66', '#33cc33', '#009900'], // green
+    ['#ccccff', '#9999ff', '#6666ff', '#3333ff', '#0000cc'], // blue
+    ['#fff0cc', '#ffe099', '#ffd166', '#ffbf00', '#cc9900'], // yellow
+    ['#f0ccff', '#d699ff', '#bb66ff', '#9933ff', '#6600cc'], // purple
+  ];
+
+  const [selectedColor, setSelectedColor] = useState(null);
+
+
   // Recordatorios
-  const [notifTarea,   setNotifTarea]   = useState('1 dia antes');
-  const [freqBaja,     setFreqBaja]     = useState('Sin Frecuencia');
-  const [freqMedia,    setFreqMedia]    = useState('Cada 5 dias');
-  const [freqAlta,     setFreqAlta]     = useState('Cada 2 dias');
-
-  // Dropdowns abiertos
-  const [abrirNotif,     setAbrirNotif]     = useState(false);
-  const [abrirFreqBaja,  setAbrirFreqBaja]  = useState(false);
-  const [abrirFreqMedia, setAbrirFreqMedia] = useState(false);
-  const [abrirFreqAlta,  setAbrirFreqAlta]  = useState(false);
-
-  // Materias
-  const [materias,         setMaterias]         = useState(MATERIAS_INICIALES);
-  const [materiaSeleccionada, setMateriaSeleccionada] = useState(null);
-
-  // Modales
-  const [modalCambiarDatos,  setModalCambiarDatos]  = useState(false);
-  const [modalEliminarCuenta, setModalEliminarCuenta] = useState(false);
-  const [modalNuevaMateria,  setModalNuevaMateria]  = useState(false);
-  const [modalModMateria,    setModalModMateria]    = useState(false);
-  const [modalElimMateria,   setModalElimMateria]   = useState(false);
-
-  // Formulario cambiar datos
-  const [editNombre,       setEditNombre]       = useState(username);
-  const [editCorreo,       setEditCorreo]       = useState(correo);
-  const [editPass,         setEditPass]         = useState('');
-  const [editPassConfirm,  setEditPassConfirm]  = useState('');
-
-  // Eliminar cuenta
-  const [passEliminar, setPassEliminar] = useState('');
-
-  // Nueva / modificar materia
-  const [nuevaMateriaNombre, setNuevaMateriaNombre] = useState('');
-  const [nuevaMateriaColor,  setNuevaMateriaColor]  = useState(COLORES_DISPONIBLES[0]);
-
   const cerrarTodosDropdowns = () => {
-    setAbrirNotif(false);
-    setAbrirFreqBaja(false);
-    setAbrirFreqMedia(false);
-    setAbrirFreqAlta(false);
+
   };
 
-  const handleGuardarMateria = () => {
-    if (!nuevaMateriaNombre) return;
-    if (modalModMateria && materiaSeleccionada !== null) {
-      setMaterias(prev => prev.map((m, i) =>
-        i === materiaSeleccionada ? { nombre: nuevaMateriaNombre, color: nuevaMateriaColor } : m
-      ));
-    } else {
-      setMaterias(prev => [...prev, { nombre: nuevaMateriaNombre, color: nuevaMateriaColor }]);
+  const guardar = async () => {
+
+    console.log("Guardar")
+    
+
+    const nuevo = {
+      nombre,
+      color,
+      notas
     }
-    setNuevaMateriaNombre('');
-    setNuevaMateriaColor(COLORES_DISPONIBLES[0]);
-    setModalNuevaMateria(false);
-    setModalModMateria(false);
-    setMateriaSeleccionada(null);
-  };
 
-  const handleEliminarMateria = () => {
-    if (materiaSeleccionada === null) return;
-    setMaterias(prev => prev.filter((_, i) => i !== materiaSeleccionada));
-    setMateriaSeleccionada(null);
-    setModalElimMateria(false);
+    let respuesta
+
+    respuesta = await crearMateria(nuevo)
+
+    if (respuesta) {
+      setVisible(false)
+    }
+  }
+
+  const modificar = async () => {
+
+    console.log("modificar")
+    console.log(materiaSel)
+
+    const nuevo = {
+      nombre,
+      color,
+      notas
+    }
+
+    let respuesta
+
+    respuesta = await actualizarMateria(materiaSel,nuevo)
+
+    if (respuesta) {
+      setModificarVisible(false)
+    }
+  }
+
+  const eliminar = async() => {
+    let respuesta
+
+    respuesta = await eliminarMateriaPI(materiaSel)
+
+    if (respuesta) {
+      setEliminarVisible(false)
+    }
+  }
+
+  const cargar = async () => {
+     setLoading(true);
+     const data = await obtenerMaterias();
+     setMaterias(data || localMaterias);
+     setLoading(false);
   };
+  
+  useEffect(() => {
+     cargar();
+  }, []);
+  
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+  
 
   return (
     <View style={styles.container}>
@@ -156,11 +186,7 @@ export default function SettingsScreen({ navigation, route }) {
         <View style={styles.card}>
           <Text style={styles.campoLabel}>Notificar tarea:</Text>
           <Dropdown
-            valor={notifTarea}
-            opciones={NOTIFICACIONES}
-            visible={abrirNotif}
-            onToggle={() => { cerrarTodosDropdowns(); setAbrirNotif(!abrirNotif); }}
-            onSeleccionar={v => { setNotifTarea(v); setAbrirNotif(false); }}
+            
           />
 
           <Text style={[styles.campoLabel, { marginTop: 12, fontWeight: 'bold' }]}>Frecuencia</Text>
@@ -169,11 +195,7 @@ export default function SettingsScreen({ navigation, route }) {
             <Text style={styles.frecuenciaLabel}>Prioridad baja:</Text>
             <View style={{ flex: 1 }}>
               <Dropdown
-                valor={freqBaja}
-                opciones={FRECUENCIAS}
-                visible={abrirFreqBaja}
-                onToggle={() => { cerrarTodosDropdowns(); setAbrirFreqBaja(!abrirFreqBaja); }}
-                onSeleccionar={v => { setFreqBaja(v); setAbrirFreqBaja(false); }}
+                
               />
             </View>
           </View>
@@ -182,11 +204,7 @@ export default function SettingsScreen({ navigation, route }) {
             <Text style={styles.frecuenciaLabel}>Prioridad media:</Text>
             <View style={{ flex: 1 }}>
               <Dropdown
-                valor={freqMedia}
-                opciones={FRECUENCIAS}
-                visible={abrirFreqMedia}
-                onToggle={() => { cerrarTodosDropdowns(); setAbrirFreqMedia(!abrirFreqMedia); }}
-                onSeleccionar={v => { setFreqMedia(v); setAbrirFreqMedia(false); }}
+                
               />
             </View>
           </View>
@@ -195,11 +213,7 @@ export default function SettingsScreen({ navigation, route }) {
             <Text style={styles.frecuenciaLabel}>Prioridad alta:</Text>
             <View style={{ flex: 1 }}>
               <Dropdown
-                valor={freqAlta}
-                opciones={FRECUENCIAS}
-                visible={abrirFreqAlta}
-                onToggle={() => { cerrarTodosDropdowns(); setAbrirFreqAlta(!abrirFreqAlta); }}
-                onSeleccionar={v => { setFreqAlta(v); setAbrirFreqAlta(false); }}
+                
               />
             </View>
           </View>
@@ -209,34 +223,36 @@ export default function SettingsScreen({ navigation, route }) {
         <Text style={styles.seccionTitulo}>Materias</Text>
         <View style={styles.card}>
           <View style={styles.materiasRow}>
-            {materias.map((m, i) => (
-              <Pressable
-                key={i}
-                style={[styles.tag, { backgroundColor: m.color },
-                  materiaSeleccionada === i && styles.tagSeleccionado]}
-                onPress={() => setMateriaSeleccionada(materiaSeleccionada === i ? null : i)}
-              >
-                <Text style={styles.tagText}>{m.nombre}</Text>
-              </Pressable>
-            ))}
+            {materias.length == 0? (
+              <Text>No hay materias registradas</Text>
+            ):(
+              <FlatList 
+                data={materias}
+                keyExtractor={(item)=>item.id.toString()}
+                showsVerticalScrollIndicator={false}
+                numColumns={4}
+                columnWrapperStyle={{ gap: 8 }}
+                contentContainerStyle={{ gap: 8 }}
+                renderItem={({item}) => (
+                  <MateriaItem
+                    materia={item}
+                  />
+                )}
+              />
+            )}
           </View>
         </View>
 
         <View style={styles.botonesRow}>
           <Pressable
             style={({ pressed }) => [styles.buttonPri, pressed && { backgroundColor: '#26793c' }]}
-            onPress={() => { setNuevaMateriaNombre(''); setNuevaMateriaColor(COLORES_DISPONIBLES[0]); setModalNuevaMateria(true); }}
+            onPress={() => setVisible(true)}
           >
             <Text style={styles.buttonText}>Nueva Materia</Text>
           </Pressable>
           <Pressable
             style={({ pressed }) => [styles.buttonSec, pressed && { backgroundColor: '#2b9b91' }]}
-            onPress={() => {
-              if (materiaSeleccionada === null) return;
-              setNuevaMateriaNombre(materias[materiaSeleccionada].nombre);
-              setNuevaMateriaColor(materias[materiaSeleccionada].color);
-              setModalModMateria(true);
-            }}
+            onPress={() => setModificarVisible(true)}
           >
             <Text style={styles.buttonText}>Modificar materia</Text>
           </Pressable>
@@ -244,173 +260,210 @@ export default function SettingsScreen({ navigation, route }) {
 
         <Pressable
           style={({ pressed }) => [styles.buttonOut, { marginTop: 0 }, pressed && { backgroundColor: '#eee' }]}
-          onPress={() => { if (materiaSeleccionada !== null) setModalElimMateria(true); }}
+          onPress={() => setEliminarVisible(true)}
         >
           <Text style={styles.buttonOutText}>Eliminar materia</Text>
         </Pressable>
 
       </ScrollView>
 
-      {/* ══ MODAL: Cambiar datos ══ */}
-      <Modal visible={modalCambiarDatos} transparent animationType="slide">
+      <Modal transparent={true} visible={visible} animationType="fade">
         <View style={styles.overlay}>
-          <View style={styles.modalGrande}>
-            <View style={styles.modalTopbar}>
-              <Text style={styles.modalTitulo}>Actualizar datos</Text>
+          <View style={styles.popup}>
+            <View style={[styles.topbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Nueva tarea</Text>
             </View>
-            <ScrollView contentContainerStyle={{ padding: 16, gap: 8 }}>
-              <Text style={styles.label}>Nombre:</Text>
-              <TextInput style={styles.inputField} value={editNombre} onChangeText={setEditNombre} />
-
-              <Text style={styles.label}>Correo:</Text>
-              <TextInput style={styles.inputField} value={editCorreo} onChangeText={setEditCorreo}
-                keyboardType="email-address" autoCapitalize="none" />
-
-              <Text style={styles.label}>Contraseña:</Text>
-              <TextInput style={styles.inputField} value={editPass} onChangeText={setEditPass}
-                secureTextEntry placeholder="••••••••••" placeholderTextColor="#7e7a7a" />
-
-              <Text style={styles.label}>Confirmar contraseña:</Text>
-              <TextInput style={styles.inputField} value={editPassConfirm} onChangeText={setEditPassConfirm}
-                secureTextEntry placeholder="••••••••••" placeholderTextColor="#7e7a7a" />
-
-              <Pressable
-                style={({ pressed }) => [styles.buttonPri, { marginTop: 10 }, pressed && { backgroundColor: '#26793c' }]}
-                onPress={() => setModalCambiarDatos(false)}
-              >
-                <Text style={styles.buttonText}>Actualizar</Text>
-              </Pressable>
-
-              <Pressable
-                style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
-                onPress={() => setModalCambiarDatos(false)}
-              >
-                <Text style={styles.buttonOutText}>Cancelar</Text>
-              </Pressable>
-
-              <Pressable
-                style={({ pressed }) => [styles.buttonRojo, pressed && { backgroundColor: '#c0392b' }]}
-                onPress={() => { setModalCambiarDatos(false); setModalEliminarCuenta(true); }}
-              >
-                <Text style={styles.buttonText}>Eliminar cuenta</Text>
-              </Pressable>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-
-      {/* ══ MODAL: Eliminar cuenta ══ */}
-      <Modal visible={modalEliminarCuenta} transparent animationType="fade">
-        <View style={styles.overlay}>
-          <View style={styles.modalPequeno}>
-            <Text style={styles.modalTituloOscuro}>¿Eliminar cuenta?</Text>
-            <Text style={styles.modalTexto}>
-              ¿Esta seguro que deseas eliminar esta cuenta de forma permanente?{'\n'}
-              <Text style={{ fontWeight: 'bold' }}>
-                (Al eliminar la cuenta, toda las tareas e informacion guardada sera eliminada)
-              </Text>
-            </Text>
-            <Text style={styles.label}>Ingrese su contraseña para proseguir:</Text>
-            <TextInput
-              style={styles.inputField}
-              value={passEliminar}
-              onChangeText={setPassEliminar}
-              secureTextEntry
-              placeholder="••••••••••"
-              placeholderTextColor="#7e7a7a"
+            
+            <View style={{padding:20, gap:10}}>
+              <Text>Nombre de la tarea:</Text>
+            <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}
+              onChangeText={setNombre}
             />
-            <Pressable
-              style={({ pressed }) => [styles.buttonRojoOscuro, pressed && { backgroundColor: '#6b0000' }]}
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={styles.buttonText}>ELIMINAR CUENTA</Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
-              onPress={() => setModalEliminarCuenta(false)}
-            >
-              <Text style={styles.buttonOutText}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+              <Text>Nombre de la tarea:</Text>
+              {colorGroups.map((group, groupIndex) => (
+                <View key={groupIndex} style={styles.row}>
 
-      {/* ══ MODAL: Nueva / Modificar materia ══ */}
-      <Modal visible={modalNuevaMateria || modalModMateria} transparent animationType="slide">
-        <View style={styles.overlay}>
-          <View style={styles.modalPequeno}>
-            <Text style={styles.modalTituloOscuro}>
-              {modalModMateria ? 'Modificar materia' : 'Nueva materia'}
-            </Text>
-            <Text style={styles.label}>Nombre:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="Nombre de la materia"
-              placeholderTextColor="#7e7a7a"
-              value={nuevaMateriaNombre}
-              onChangeText={setNuevaMateriaNombre}
-            />
-            <Text style={[styles.label, { marginTop: 8 }]}>Color:</Text>
-            <View style={styles.coloresRow}>
-              {COLORES_DISPONIBLES.map(c => (
-                <Pressable
-                  key={c}
-                  style={[styles.colorCirculo, { backgroundColor: c },
-                    nuevaMateriaColor === c && styles.colorCirculoSeleccionado]}
-                  onPress={() => setNuevaMateriaColor(c)}
-                />
+                {group.map((color, colorIndex) => (
+                  <TouchableOpacity
+                    key={colorIndex}
+                    style={[styles.colorBox,{ backgroundColor: color }, selectedColor === color && styles.selectedBox]}
+                      onPress={() => {setSelectedColor(color); setColor(color)}}
+                    />
+                  ))}
+                </View>
               ))}
+            </View>      
+
+            <View style={styles.previewContainer}>
+              <Text>Selecionado:</Text>
+              <View
+                style={[
+                  styles.preview,
+                  { backgroundColor: selectedColor || '#ccc' }
+                ]}
+              />
             </View>
-            <Pressable
-              style={({ pressed }) => [styles.buttonPri, { marginTop: 12 }, pressed && { backgroundColor: '#26793c' }]}
-              onPress={handleGuardarMateria}
-            >
-              <Text style={styles.buttonText}>
-                {modalModMateria ? 'Guardar cambios' : 'Agregar'}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
-              onPress={() => { setModalNuevaMateria(false); setModalModMateria(false); }}
-            >
-              <Text style={styles.buttonOutText}>Cancelar</Text>
-            </Pressable>
+            <View style={[styles.botonesRow,{padding:10}]}>
+              <Pressable onPress={guardar} style={styles.buttonPri}>
+                <Text>Crear</Text>
+              </Pressable>
+              <Pressable style={[styles.buttonPri]} onPress={() => setVisible(false)}>
+                <Text>Cancelar</Text>
+              </Pressable>
+            </View>
+            
           </View>
         </View>
       </Modal>
 
-      {/* ══ MODAL: Confirmar eliminar materia ══ */}
-      <Modal visible={modalElimMateria} transparent animationType="fade">
+      <Modal transparent={true} visible={modificarVisible} animationType="fade">
         <View style={styles.overlay}>
-          <View style={styles.modalPequeno}>
-            <Text style={styles.modalTituloOscuro}>¿Eliminar materia?</Text>
-            <Text style={styles.modalTexto}>
-              ¿Esta seguro que deseas eliminar la materia{' '}
-              <Text style={{ fontWeight: 'bold' }}>
-                {materiaSeleccionada !== null ? materias[materiaSeleccionada]?.nombre : ''}
-              </Text>?
-            </Text>
-            <Pressable
-              style={({ pressed }) => [styles.buttonRojoOscuro, pressed && { backgroundColor: '#6b0000' }]}
-              onPress={handleEliminarMateria}
-            >
-              <Text style={styles.buttonText}>ELIMINAR</Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
-              onPress={() => setModalElimMateria(false)}
-            >
-              <Text style={styles.buttonOutText}>Cancelar</Text>
-            </Pressable>
+          <View style={styles.popup}>
+            <View style={[styles.topbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Modificar tarea</Text>
+            </View>
+
+            <View style={{padding:20, gap:10}}>
+              <Picker style ={styles.inputField}
+              selectedValue={materiaSel}
+              onValueChange={(itemValue) =>{setMateriaSel(itemValue)}}>
+              <Picker.Item label="materia a modificar" value=""/>
+                {
+                  materias.map((materia) =>(
+                    <Picker.Item
+                      key={materia.id}
+                      label = {materia.nombre}
+                      value={materia.id}
+                    />
+                  ))}      
+              </Picker>
+              <Text>Nombre de la tarea:</Text>
+            <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}
+              onChangeText={setNombre}
+            />
+              <Text>Nombre de la tarea:</Text>
+              {colorGroups.map((group, groupIndex) => (
+                <View key={groupIndex} style={styles.row}>
+
+                {group.map((color, colorIndex) => (
+                  <TouchableOpacity
+                    key={colorIndex}
+                    style={[styles.colorBox,{ backgroundColor: color }, selectedColor === color && styles.selectedBox]}
+                      onPress={() => {setSelectedColor(color); setColor(color)}}
+                    />
+                  ))}
+                </View>
+              ))}
+            </View>      
+
+            <View style={styles.previewContainer}>
+              <Text>Selecionado:</Text>
+              <View
+                style={[
+                  styles.preview,
+                  { backgroundColor: selectedColor || '#ccc' }
+                ]}
+              />
+            </View>
+            <View style={[styles.botonesRow,{padding:10}]}>
+              <Pressable onPress={modificar} style={styles.buttonPri}>
+                <Text>Modificar</Text>
+              </Pressable>
+              <Pressable style={[styles.buttonPri]} onPress={() => setVisible(false)}>
+                <Text>Cancelar</Text>
+              </Pressable>
+            </View>
+            
           </View>
         </View>
       </Modal>
+      
 
+      <Modal transparent={true} visible={eliminarVisible} animationType="fade">
+        <View style={styles.overlay}>
+          <View style={[styles.popup,{margin:50}]}>
+            <View style={[styles.topbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Eliminar materia</Text>
+            </View>
+
+            <View style={{padding:20, gap:10}}>
+              <Text>Seleccione materia a eliminar:</Text>
+              <Picker style ={styles.inputField}
+              selectedValue={materiaSel}
+              onValueChange={(itemValue) =>{setMateriaSel(itemValue)}}>
+              <Picker.Item label="materia a modificar" value=""/>
+                {
+                  materias.map((materia) =>(
+                    <Picker.Item
+                      key={materia.id}
+                      label = {materia.nombre}
+                      value={materia.id}
+                    />
+                  ))}      
+              </Picker>
+              <Text>(Para eliminar la materia, asegurese de que tareas existente no tengan tareas con esa materia, esta accion no se puede deshacer)</Text>
+            </View>      
+            <View style={[styles.botonesRow,{padding:10}]}>
+              <Pressable onPress={eliminar} style={styles.buttonPri}>
+                <Text>Eliminar</Text>
+              </Pressable>
+              <Pressable style={[styles.buttonPri]} onPress={() => setEliminarVisible(false)}>
+                <Text>Cancelar</Text>
+              </Pressable>
+            </View>
+            
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
+  row: {
+    flexDirection: 'row',
+    marginBottom: 7,
+  },
+
+  colorBox: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginHorizontal: 5,
+  },
+
+  selectedBox: {
+    borderWidth: 3,
+    borderColor: '#000',
+  },
+
+  previewContainer: {
+    marginTop: 1,
+    alignItems: 'center',
+  },
+
+  preview: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginTop: 10,
+  },
+
+  inputField:{
+    flex: 1,
+    borderWidth:1,
+    fontFamily: 'Arial',
+    fontWeight: 'medium',
+    borderColor: '#c4c4c4',
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    flexDirection:'row',
+    fontSize:20,
+    padding:5,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   container: { flex: 1, backgroundColor: '#e2e2e2' },
   topbar: {
     height: 70,
@@ -532,7 +585,7 @@ const styles = StyleSheet.create({
   },
 
   // Materias
-  materiasRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  materiasRow: {  gap: 8 },
   tag: {
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -547,8 +600,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
+
+  popup: {
+    
+    backgroundColor: 'white',
+    borderRadius: 5,
+  },
+
   modalGrande: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -577,6 +636,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
+
+
+    textLarge:{
+        fontFamily: 'Inter_700Bold',
+        fontSize: 25,
+        color: '#fff',
+    },
 
   label:      { fontFamily: 'Arial', fontSize: 14, color: '#444', marginTop: 4 },
   inputField: {
