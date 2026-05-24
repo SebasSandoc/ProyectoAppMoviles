@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Button, Image, StyleSheet } from 'react-native'
+import { View, Text, Button, Image, StyleSheet, Pressable } from 'react-native'
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
 export default function FinalizadoItem({ tarea, onVer }) {
@@ -11,6 +11,7 @@ export default function FinalizadoItem({ tarea, onVer }) {
   });
 
   return (
+    <Pressable onPress={onVer}>
     <View style={styles.finished}>
       <Image
         source={require("../assets/check.png")}
@@ -18,6 +19,7 @@ export default function FinalizadoItem({ tarea, onVer }) {
       />
       <Text style={[styles.text, { fontSize: 20, marginLeft: 5 }]}>{tarea.nombre}</Text>
     </View>
+    </Pressable>
   );
 }
 

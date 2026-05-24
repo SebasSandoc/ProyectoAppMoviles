@@ -74,8 +74,7 @@ export const crearMateria = async (materia) => {
 // PUT - Actualizar producto
 export const actualizarMateria = async (id, materia) => {
 
-  console.log(materia)
-  console.log(id)
+
   try {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",

@@ -31,7 +31,6 @@ const [fontsLoaded] = useFonts({
         });
 
     return (
-        <Pressable onPress={onVer}>
         <View style={styles.list}>
             
             <Text style={styles.nameText}>{tarea.nombre}</Text>
@@ -41,7 +40,6 @@ const [fontsLoaded] = useFonts({
                 <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
                        
         </View>
-        </Pressable> 
     )
 }
 

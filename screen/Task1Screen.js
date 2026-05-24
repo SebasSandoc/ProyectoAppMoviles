@@ -1,8 +1,11 @@
-import {View, Text, StyleSheet,ScrollView,Pressable, Image} from 'react-native'
+import {View, Text, StyleSheet,ScrollView,Pressable, Image, ActivityIndicator} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import {prioridades} from '../data/prioridades';
-import { materias } from '../data/materias';
+import { materias as localMaterias} from '../data/materias';
 import { tareas } from '../data/tareas';
+import { useEffect, useState } from 'react';
+import { obtenerMaterias } from '../services/materiaService';
+import { marcarFinalizada } from '../services/tareaService';
 
 
 export default function Task1creen({route,navigation}){
@@ -14,7 +17,12 @@ export default function Task1creen({route,navigation}){
         Inter_300Light
     })
 
+    const [loading,setLoading] = useState(true)
+    const [materias,setMaterias] = useState([])
+
     const {tarea} = route.params;
+
+    console.log(tarea.materias)
 
     const fecha = new Date(tarea.fechaMax)
 
@@ -44,19 +52,34 @@ export default function Task1creen({route,navigation}){
     };
 
     const color = prioridadColor[tarea.prioridad] || "#999"
+    const headerColor = !tarea.finalizada ? prioridadColor[tarea.prioridad] : '#37CDD8'
+
     const colorborde = prioridadColorBorde[tarea.prioridad] || "#999"
 
-    const materiaNombre = tarea.materias[0];
+    const marcarComoHecha = async() =>{
+        const marcada = await marcarFinalizada(tarea);
 
-    const materia = materias.find(
-        m => m.nombre.toLowerCase() === materiaNombre.toLowerCase()
-    );
+        if (marcada) {
+            console.log("marcada")
+        }
+    }
 
-    const colorMat = materia ? materia.color :'#ccc';
+    const cargar = async () => {
+        setLoading(true);
+        const data = await obtenerMaterias();
+        setMaterias(data || localMaterias);
+        setLoading(false);
+    };
+        
+    useEffect(() => {
+        cargar();
+    }, []);
+      
+    if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
     return(
         <View style={styles.container}> 
-            <View style={[styles.topbar,{backgroundColor:color}]}>
+            <View style={[styles.topbar,{backgroundColor:headerColor}]}>
                 <Text style={styles.barText}>{tarea.nombre}</Text>
                 <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
             </View>
@@ -67,8 +90,25 @@ export default function Task1creen({route,navigation}){
                     <Text style={styles.textLarge}>Fecha limite:</Text>
                     <Text style={styles.textMedium}>{fechaFormato}</Text>
                     <Text style={styles.textLarge}>Materia(s):</Text>
-                    <View style={[styles.subjectContainer, {backgroundColor:colorMat}]}>
-                        <Text style={styles.subjectText}>{tarea.materias[0]}</Text>
+                    <View style={[styles.materiasContainer]}>
+                        {tarea.materias.map((id) =>{
+                            const materia = materias.find(
+                                (m) => m.id === id
+                            );
+
+                            if(!materia) return null;
+
+                            return(
+                                <View
+                                    key={id}
+                                    style={[styles.subjectContainer, {backgroundColor:materia.color}]}
+                                >
+                                    <Text style={styles.subjectText}>
+                                        {materia.nombre}
+                                    </Text>
+                                </View>
+                            )
+                        })}
                     </View>
                     <Text style={styles.textLarge}>Prioridad:</Text>
                     <View style={[styles.priorityContainer, {backgroundColor:color, borderColor:colorborde}]}>
@@ -94,7 +134,7 @@ export default function Task1creen({route,navigation}){
                     />
 
                     <View style={{flexDirection:'row',}}>
-                        <Pressable style={[styles.ButtonPrimary,{marginRight:5}]}>
+                        <Pressable onPress={marcarComoHecha} style={[styles.ButtonPrimary,{marginRight:5}]}>
                             <Text style={styles.ButtonText}>Marcar como hecha</Text>
                         </Pressable>
                         <Pressable onPress={()=> navigation.navigate("Modify", {tarea})} style={[styles.ButtonSecondary,{marginLeft:5}]}>
@@ -116,6 +156,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#e2e2e2', 
     },
 
+    materiasContainer:{
+        flexDirection:"row",
+        gap:5
+    },
+    
     topbar: {
         zIndex: 1,
         top:0,

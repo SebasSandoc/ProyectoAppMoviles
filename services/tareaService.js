@@ -35,12 +35,13 @@ export const crearTarea = async (tarea) => {
   try {
 
     console.log(tarea)
+    console.log(tarea.materias[0])
 
     const payload = {
       id: 0,
       nombre: tarea.nombre,
       prioridad: tarea.prioridad,
-      materias: tarea.materias,
+      materias: tarea.materias[0],
       fechaMax: tarea.fechaMax, 
       notas: tarea.notas || "",
       finalizada: tarea.finalizada ?? false
@@ -98,6 +99,30 @@ export const actualizarTarea = async (id, tarea) => {
     return null;
   }
 };
+
+export const marcarFinalizada = async (tarea) => {
+
+  console.log(tarea)
+  console.log(JSON.stringify(tarea))
+
+  try {
+    const res = await fetch(`${BASE_URL}/${tarea.id}`,{
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body:JSON.stringify({
+        ...tarea,
+        finalizada:!tarea.finalizada
+      })
+    });
+
+    return await handleResponse(res)
+  } catch(error){
+    console.error("Error al actualizar finalizada:",error.message);
+    return null;
+  }
+}
 
 // DELETE - Eliminar producto
 export const eliminarTareaAPI = async (id) => {

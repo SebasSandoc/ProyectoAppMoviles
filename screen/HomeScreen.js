@@ -35,6 +35,14 @@ export default function HomeScreen({navigation}){
     cargar();
   }, []);
 
+  const tareasFinalizadas = tareas.filter(
+    tarea => tarea.finalizada
+  )
+
+  const tareasNoFinalizadas = tareas.filter(
+    tarea => !tarea.finalizada
+  )
+
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
 
@@ -46,18 +54,17 @@ export default function HomeScreen({navigation}){
         </View>
           
         <ScrollView>
-            <View style={{justifyContent: 'center',alignItems:'center', padding:20, flex:1}}>
-              <Image source={require('../assets/applogo.png')} style={styles.img}/>
-            </View>
+          <View style={{justifyContent: 'center',alignItems:'center', padding:20, flex:1}}>
+            <Image source={require('../assets/applogo.png')} style={styles.img}/>
+          </View>
             <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>Tareas pendientes</Text>
-
             
             <View style={{marginTop:20}}>
-              {tareas.length === 0 ? (
+              {tareasNoFinalizadas.length === 0 ? (
                 <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
               ) :(
                 <FlatList
-                  data={tareas}
+                  data={tareasNoFinalizadas}
                   keyExtractor={(item) => item.id.toString()}
                   showsVerticalScrollIndicator={false}
                   renderItem={({item}) => (
@@ -72,7 +79,23 @@ export default function HomeScreen({navigation}){
 
 
         <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center', marginTop:15}]}>Tareas finalizadas</Text>
-
+            <View style={{marginTop:20}}>
+              {tareasFinalizadas.length === 0 ? (
+                <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
+              ) :(
+                <FlatList
+                  data={tareasFinalizadas}
+                  keyExtractor={(item) => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item}) => (
+                    <FinalizadoItem
+                      tarea={item}
+                      onVer={()=> navigation.navigate("Task1",{tarea:item})}
+                    />
+                  )}
+                />
+              )}
+            </View>
         
               
             

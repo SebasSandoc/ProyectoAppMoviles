@@ -1,10 +1,11 @@
 
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Pressable, ActivityIndicator} from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { tareas } from '../data/tareas';
-import { useContext } from 'react';
+import { tareas as localTareas } from '../data/tareas';
+import { useContext, useEffect, useState } from 'react';
 import { TareaContext } from '../context/TareaContext';
+import { obtenerTareas } from '../services/tareaService';
 
 
 LocaleConfig.locales['es'] = {
@@ -27,22 +28,30 @@ LocaleConfig.defaultLocale = 'es';
 
 export default function CalendarScreen({navigation}){
 
+    const prioridadColor = {
+        Baja: "#2ecc71",
+        Media: "#f1c40f",
+        Alta: "#e74c3c"
+    };
+    
     const {agenda} = useContext(TareaContext)
 
-    const listaTareas =[...tareas, ...agenda]
+    const [tareas, setTareas] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_700Bold,
-    Inter_300Light
-  })
+
+    const [fontsLoaded] = useFonts({
+        Inter_400Regular,
+        Inter_500Medium,
+        Inter_700Bold,
+        Inter_300Light
+    })
 
   const events = { }
 
+    
+    const listaTareas =[...tareas]
 
-  console.log("agenda:", agenda);
-  console.log("tareas:", tareas);
   listaTareas.forEach((tarea) =>{
     const fecha = tarea.fechaMax.split("T")[0];
 
@@ -52,6 +61,20 @@ export default function CalendarScreen({navigation}){
 
     events[fecha].push(tarea)
   })
+
+  const cargar = async () => {
+    setLoading(true);
+    const data = await obtenerTareas();
+    setTareas(data || localTareas);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+
 
     return(
         <View style={styles.container}>
@@ -83,7 +106,7 @@ export default function CalendarScreen({navigation}){
                                 style={{
                                     
                                     marginTop:4,
-                                    backgroundColor:'#37CDD8',
+                                    backgroundColor:prioridadColor[task.prioridad] || '#37CDD8',
                                     paddingHorizontal:4,
                                     borderRadius:4
                                 }}>
