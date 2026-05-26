@@ -39,7 +39,10 @@ export default function NewTaskScreen({route,navigation}){
     const [materiaArray,setMateriaArray] =useState([]);
 
     const [calendarioVisible, setCalendarioVisible] = useState(false)
+    const [notiVisible, setNotiVisible] = useState(false)
     const [fecha, setFecha] = useState(null)
+
+    const [errorMsg, setErrorMsg] = useState("")
 
     const hoy = new Date().toISOString().split("T")[0]
 
@@ -108,6 +111,8 @@ export default function NewTaskScreen({route,navigation}){
         console.log(JSON.stringify(materiaArray))
 
         if(!verificar()){
+            setNotiVisible(true)
+            setErrorMsg("No pueden existir campos vacios")
             console.log("Algun campo esta vacio")
             return
         }
@@ -153,7 +158,9 @@ export default function NewTaskScreen({route,navigation}){
     <View style={styles.container}>
         <View style={styles.topbar}>
             <Text style={styles.barText}>Nueva tarea</Text>
-            <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+            <Pressable onPress={()=> navigation.goBack()}>
+                <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+            </Pressable>        
         </View>
         <ScrollView>
             <View style={{height:70}}/>
@@ -166,6 +173,7 @@ export default function NewTaskScreen({route,navigation}){
                 <Text style={styles.textLarge}>Materia(s):</Text>             
                 <View>
                     <Picker
+                    style={styles.inputField}
                     selectedValue={materiaSel}
                     onValueChange={(itemValue) => agregarMateria(itemValue)}
                     >
@@ -202,10 +210,6 @@ export default function NewTaskScreen({route,navigation}){
        
                 <Text style={styles.textLarge}>Fecha limite:</Text>
                         
-                <TextInput placeholder='AAAA-MM-DD' placeholderTextColor='#7e7a7a' style ={styles.inputField}
-                    value={fechaMax}
-                    onChangeText={setFecha}
-                />
                 <Pressable 
                     onPress={() =>setCalendarioVisible(true)}
                     style={{
@@ -296,14 +300,27 @@ export default function NewTaskScreen({route,navigation}){
               }}
             />
 
-            <TouchableOpacity
-              
-              onPress={() => setCalendarioVisible(false)}
-            >
+            <TouchableOpacity onPress={() => setCalendarioVisible(false)}>
               <Text >
                 Close
               </Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+        <Modal transparent={true} visible={notiVisible} animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.popup}>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Error</Text>
+            </View>
+            <View style={{padding:20, gap:10}}>
+              <Text style={styles.textMedium}>{errorMsg}</Text>
+            </View>     
+            <Pressable onPress={()=>setNotiVisible(false)} style={[styles.ButtonPrimary,{margin:20}]}>
+                <Text style={[styles.ButtonText, {textAlign:'center'}]}>Cerrar</Text>
+              </Pressable>    
           </View>
         </View>
       </Modal>
@@ -318,6 +335,11 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)",
         justifyContent: "center",
         alignItems: "center",
+    },
+
+    popup: {
+        backgroundColor: 'white',
+        borderRadius: 5,
     },
 
     modalContent: {
@@ -341,7 +363,18 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         gap:5
     },
-
+    modalTopbar: {
+        zIndex: 1,
+        top:0,
+        alignItems:'stretch',
+        width:'100%',
+        height: 70,
+        backgroundColor: '#37CDD8',        
+        alignItems:'center',
+        flexDirection:'row',
+        padding:20, 
+        justifyContent:'space-between'
+    },
     topbar: {
         zIndex: 1,
         top:0,

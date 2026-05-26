@@ -1,5 +1,5 @@
 
-import {View, Text, StyleSheet, Pressable, ActivityIndicator} from 'react-native';
+import { Image,View, Text, StyleSheet, Pressable, ActivityIndicator} from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { tareas as localTareas } from '../data/tareas';
@@ -80,6 +80,9 @@ export default function CalendarScreen({navigation}){
         <View style={styles.container}>
             <View style={styles.topbar}>
                 <Text style={styles.barText}>Calendario</Text>
+                <Pressable onPress={()=> navigation.navigate("Home")}>
+                    <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+                </Pressable>
             </View>
             <View style={{height:70}}/>
             
@@ -156,14 +159,17 @@ export default function CalendarScreen({navigation}){
 const styles = StyleSheet.create({
 
     topbar: {
+        zIndex: 1,
         top:0,
         position: 'absolute',
         alignItems:'stretch',
         width:'100%',
         height: 70,
         backgroundColor: '#37CDD8',    
-        justifyContent: 'center',
-           
+        alignItems:'center',
+        flexDirection:'row',
+        padding:20, 
+        justifyContent:'space-between'  
     
         },
     barText:{

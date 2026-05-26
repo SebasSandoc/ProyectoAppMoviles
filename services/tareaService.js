@@ -113,7 +113,7 @@ export const marcarFinalizada = async (tarea) => {
       },
       body:JSON.stringify({
         ...tarea,
-        finalizada:!tarea.finalizada
+        finalizada:true
       })
     });
 

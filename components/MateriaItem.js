@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Button, Image, StyleSheet, Pressable } from 'react-native'
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
-export default function MateriaItem({ materia }) {
+export default function MateriaItem({ materia, onVer }) {
 const [fontsLoaded] = useFonts({
         Inter_400Regular,
         Inter_500Medium,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     },
 
     subjectContainer:{
-        backgroundColor: '#af2b2b',
+        backgroundColor: '#3a4ebd',
         borderRadius: 15,
         padding: 5,
         paddingHorizontal: 10,

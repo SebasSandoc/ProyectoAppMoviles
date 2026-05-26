@@ -22,7 +22,11 @@ export default function Task1creen({route,navigation}){
 
     const {tarea} = route.params;
 
-    console.log(tarea.materias)
+    const fechaTarea = new Date(tarea.fechaMax)
+    const hoy = new Date();
+
+    const diferencia = fechaTarea.getTime() - hoy.getTime();
+    const dias =  Math.floor(diferencia / (1000 * 60 * 60 * 24));
 
     const fecha = new Date(tarea.fechaMax)
 
@@ -61,6 +65,7 @@ export default function Task1creen({route,navigation}){
 
         if (marcada) {
             console.log("marcada")
+            navigation.navigate("ConfirmTask")
         }
     }
 
@@ -81,7 +86,9 @@ export default function Task1creen({route,navigation}){
         <View style={styles.container}> 
             <View style={[styles.topbar,{backgroundColor:headerColor}]}>
                 <Text style={styles.barText}>{tarea.nombre}</Text>
-                <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+                <Pressable onPress={()=> navigation.goBack()}>
+                    <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+                </Pressable>
             </View>
             <ScrollView>
                 <View style={{height:70}}/>
@@ -118,29 +125,39 @@ export default function Task1creen({route,navigation}){
                     <View style={styles.NotesContainer}>
                         <Text style={styles.textsmall}>{tarea.notas}</Text>
                     </View>
-                    <Text style={{
-                        fontFamily: 'Inter_400Regular',
-                        fontSize: 20,
-                        textAlign: 'center'
-                    }}>Quedan <Text style={{fontFamily:'Inter_700Bold'}}>10 dias</Text> para la fecha limite.</Text>
+                    
+                    {!tarea.finalizada &&(
+                        <View>
+                            <Text style={{
+                                fontFamily: 'Inter_400Regular',
+                                fontSize: 20,
+                                textAlign: 'center'
+                            }}>{
+                                dias > 0
+                                ? `Faltan ${dias} días para la tarea`
+                                : dias < 0
+                                ? `Han pasado ${Math.abs(dias)} días desde la fecha limite`
+                                : "La entrega de la tarea es hoy"
+                            }</Text>
+                            <View 
+                                style={{
+                                    marginTop:20,
+                                    marginBottom:20,
+                                    borderBottomColor: '#757575',
+                                    borderBottomWidth: 1,
 
-                    <View 
-                        style={{
-                            marginTop:5,
-                            marginBottom:5,
-                            borderBottomColor: '#757575',
-                            borderBottomWidth: 1,
-                        }}
-                    />
-
-                    <View style={{flexDirection:'row',}}>
-                        <Pressable onPress={marcarComoHecha} style={[styles.ButtonPrimary,{marginRight:5}]}>
-                            <Text style={styles.ButtonText}>Marcar como hecha</Text>
-                        </Pressable>
-                        <Pressable onPress={()=> navigation.navigate("Modify", {tarea})} style={[styles.ButtonSecondary,{marginLeft:5}]}>
-                            <Text style={styles.ButtonText}>Modificar Tarea</Text>
-                        </Pressable>
-                    </View>
+                                }}
+                            />
+                            <View style={{flexDirection:'row',}} >
+                                <Pressable onPress={marcarComoHecha} style={[styles.ButtonPrimary,{marginRight:5}]}>
+                                    <Text style={styles.ButtonText}>Marcar como hecha</Text>
+                                </Pressable>
+                                <Pressable onPress={()=> navigation.navigate("Modify", {tarea})} style={[styles.ButtonSecondary,{marginLeft:5}]}>
+                                    <Text style={styles.ButtonText}>Modificar Tarea</Text>
+                                </Pressable>
+                            </View>
+                        </View>       
+                    )}
                     <Pressable onPress={()=> navigation.navigate("DeleteTask", {tarea})}>
                             <Text style={styles.ButtonDelete}>Eliminar tarea</Text>
                     </Pressable>

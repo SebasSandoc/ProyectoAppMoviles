@@ -1,11 +1,7 @@
-import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Image, ActivityIndicator, Modal } from 'react-native';
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
-import { useState } from 'react';
-import { crearUsuario } from '../services/usuarioService';
-
-
-
-
+import { useContext, useState, useEffect } from 'react';
+import { crearUsuario, obtenerUsuarios } from '../services/usuarioService';
 
 export default function RegisterScreen({navigation}){
 
@@ -16,27 +12,57 @@ export default function RegisterScreen({navigation}){
     Inter_300Light
   })
 
+  const [errorMsg,setErrorMsg] = useState("")
+
+  const [usuarios,setUsuarios] = useState([]);
   const [nombre,setNombre] = useState("");
-  const [usuario, setUsuario] = useState("");
   const [correo, setCorreo] = useState("");
   const [contrasenia, setContrasenia] = useState("");
   const [confirmar, setConfirmar] = useState("");
 
+  const[loading,setLoading] = useState(true);
+  const[notiVisible,setNotiVisible] =useState(false);
+
+
+  const verificar = () => {
+    if (nombre == "") return false
+    if (correo == "") return false
+    if (contrasenia == "") return false
+    if (confirmar == "") return false
+
+    return true
+  }
+
   const guardar = async () => {
+
+    if (!verificar()){
+      setErrorMsg("Todos los campos deben ser llenados.")
+      setNotiVisible(true)
+      return
+    }
 
     if (contrasenia != confirmar) {
       console.log("Contraseñas no coiniciden")
+      setErrorMsg("las contraseñas ingresadas no coinciden")
+      setNotiVisible(true)
       return
     }
 
     const nuevo = {
       nombre,
-      usuario,
       correo,
       contrasenia
     }
 
-    console.log(nuevo)
+    const yaRegistrado = usuarios.some(
+      (item)=>item.correo.toLowerCase() === correo.toLowerCase()
+    );
+
+    if(yaRegistrado) {
+      setErrorMsg("Correo ya registrado")
+      setNotiVisible(true)
+      return
+    }
 
     let status 
 
@@ -47,6 +73,18 @@ export default function RegisterScreen({navigation}){
     }
   }
 
+  const cargar = async () => {
+      setLoading(true);
+      const data = await obtenerUsuarios();
+      setUsuarios(data || null);
+      setLoading(false);
+  };
+    
+    useEffect(() => {
+        cargar();
+    }, []);
+  
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
     return(
     <View style={styles.container}>
@@ -59,7 +97,7 @@ export default function RegisterScreen({navigation}){
           <Image source={require('../assets/applogo.png')} style={styles.img} />
         </View>
 
-        <Text style={styles.label}>Nombre:</Text>
+        <Text style={styles.textLarge}>Nombre:</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Usuario"
@@ -67,15 +105,7 @@ export default function RegisterScreen({navigation}){
           onChangeText={setNombre}
         />
 
-        <Text style={styles.label}>Nombre de usuario:</Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Nombre de suuario"
-          placeholderTextColor="#7e7a7a"
-          onChangeText={setUsuario}
-        />
-
-        <Text style={styles.label}>Correo electronico:</Text>
+        <Text style={styles.textLarge}>Correo electronico:</Text>
         <TextInput
           style={styles.inputField}
           placeholder="correoelectronico@dominio.com"
@@ -85,7 +115,7 @@ export default function RegisterScreen({navigation}){
           onChangeText={setCorreo}
         />
 
-        <Text style={styles.label}>Contraseña:</Text>
+        <Text style={styles.textLarge}>Contraseña:</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Contraseña"
@@ -94,9 +124,9 @@ export default function RegisterScreen({navigation}){
           onChangeText={setContrasenia}
         />
 
-        <Text style={styles.label}>Confirma contraseña:</Text>
+        <Text style={styles.textLarge}>Confirma contraseña:</Text>
         <TextInput
-          style={styles.inputField}
+          style={[styles.inputField]}
           placeholder="Confirma tu contraseña"
           placeholderTextColor="#7e7a7a"
           secureTextEntry
@@ -109,21 +139,90 @@ export default function RegisterScreen({navigation}){
           onPress={guardar}
           style={({ pressed }) => [styles.buttonPri, pressed && { backgroundColor: '#26793c' }]}
         >
-          <Text style={styles.buttonText}>Registrarme</Text>
+          <Text style={styles.ButtonText}>Registrarme</Text>
         </Pressable>
 
         <Pressable
           onPress={() => navigation.navigate('Login')}
-          style={({ pressed }) => [styles.buttonOut, pressed && { backgroundColor: '#eee' }]}
+          style={({ pressed }) => [styles.buttonOut, {padding:10},  pressed && { backgroundColor: '#eee' }]}
         >
-          <Text style={styles.buttonOutText}>Cancelar</Text>
+          <Text style={[styles.ButtonText, {color:'#000'}]}>Cancelar</Text>
         </Pressable>
       </ScrollView>
-    </View>
+
+      <Modal transparent={true} visible={notiVisible} animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.popup}>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Error</Text>
+            </View>
+
+            <View style={{padding:20, gap:10}}>
+              <Text style={styles.textMedium}>{errorMsg}</Text>
+            </View>      
+            <Pressable onPress={()=>setNotiVisible(false)} style={[styles.buttonPri,{margin:20}]}>
+                <Text style={[styles.ButtonText]}>Cerrar</Text>
+              </Pressable>    
+          </View>
+        </View>
+      </Modal>
+    </View> 
+
     );
 }
 
 const styles = StyleSheet.create({
+
+  buttonOut: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#0f5337',
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  popup: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+  },
+
+  textLarge:{
+    fontFamily: 'Inter_700Bold',
+    fontSize: 25,
+  },
+
+  textMedium:{
+    fontFamily: 'Inter_400Regular',
+    fontSize: 20,
+  },
+
+  textsmall:{
+    fontFamily: 'Inter_300Light',
+    fontSize: 18,
+  },
+  modalTopbar: {
+    zIndex: 1,
+    top:0,
+    alignItems:'stretch',
+    width:'100%',
+    height: 70,
+    backgroundColor: '#37CDD8',        
+    alignItems:'center',
+    flexDirection:'row',
+    padding:20, 
+    justifyContent:'space-between'
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#e2e2e2',
@@ -160,10 +259,10 @@ const styles = StyleSheet.create({
     borderColor: '#c4c4c4',
     borderRadius: 5,
     height: 35,
-    fontSize: 15,
+    fontSize: 18,
     padding: 5,
     backgroundColor: '#fff',
-    fontFamily: 'Inter_300Light',
+    fontFamily: 'Inter_400Regular',
   },
   errorText: {
     color: '#E74C3C',
@@ -180,15 +279,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
   },
-  buttonOut: {
-    borderWidth: 1,
-    borderColor: '#c4c4c4',
-    height: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    backgroundColor: '#fff',
+
+  ButtonText:{
+    fontFamily: 'Inter_400Regular',
+    fontSize: 18,
+    color: '#fff',
   },
-  buttonText:    { color: '#fff', fontSize: 16, fontWeight: 'bold', fontFamily: 'Inter_500Medium' },
   buttonOutText: { color: '#555', fontSize: 16, fontFamily: 'Inter_500Medium' },
 });

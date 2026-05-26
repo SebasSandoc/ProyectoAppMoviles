@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView, TextInput, Modal, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Image, View, Text, StyleSheet, Pressable, ScrollView, SafeAreaView, TextInput, Modal, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from '../context/AuthContext';
@@ -6,17 +6,7 @@ import { materias as localMaterias } from '../data/materias';
 import { actualizarMateria, crearMateria, eliminarMateriaPI, obtenerMaterias } from '../services/materiaService';
 import MateriaItem from '../components/MateriaItem';
 import { Picker } from '@react-native-picker/picker';
-
-const FRECUENCIAS  = ['Sin Frecuencia', 'Cada 2 dias', 'Cada 3 dias', 'Cada 5 dias', 'Cada semana'];
-const NOTIFICACIONES = ['1 dia antes', '2 dias antes', '3 dias antes', '1 semana antes'];
-const COLORES_DISPONIBLES = ['#F44336', '#E91E63', '#9C27B0', '#2196F3', '#4CAF50', '#FF9800', '#00BCD4'];
-
-const MATERIAS_INICIALES = [
-  { nombre: 'Calculo',     color: '#E91E63' },
-  { nombre: 'Fisica',      color: '#2196F3' },
-  { nombre: 'Estadistica', color: '#9C27B0' },
-  { nombre: 'Escritura',   color: '#FF5722' },
-];
+import { obtenerTareas } from '../services/tareaService';
 
 
 function Dropdown({ valor, opciones, visible, onToggle, onSeleccionar }) {
@@ -46,13 +36,17 @@ export default function SettingsScreen({ navigation, route }) {
   const {usuario} = useContext(AuthContext);
   const[loading,setLoading] = useState(true);
 
+  const [errorMsg,setErrorMsg] = useState("")
+
   const [materias,setMaterias] = useState([])
+  const [tareas,setTareas] = useState([])
 
   const [materiaSel,setMateriaSel] = useState("")
 
   const [visible,setVisible] = useState(false)
   const [modificarVisible,setModificarVisible] = useState(false)
   const [eliminarVisible,setEliminarVisible] = useState(false)
+  const [notiVisible,setNotiVisible] = useState(false);
 
   const [nombre,setNombre] = useState("")
   const [color,setColor] = useState("")
@@ -66,30 +60,47 @@ export default function SettingsScreen({ navigation, route }) {
   });
 
   const colorGroups = [
-    ['#ffcccc', '#ff9999', '#ff6666', '#ff3333', '#cc0000'], 
+    ['#c9f1f3', '#7edfe6', '#71d7df', '#3bcad4', '#06b5c2'], 
     ['#ccffcc', '#99ff99', '#66ff66', '#33cc33', '#009900'], // green
     ['#ccccff', '#9999ff', '#6666ff', '#3333ff', '#0000cc'], // blue
-    ['#fff0cc', '#ffe099', '#ffd166', '#ffbf00', '#cc9900'], // yellow
+    ['#ffe3cc', '#ffbe99', '#ffab66', '#ff8800', '#cc5c00'], // yellow
     ['#f0ccff', '#d699ff', '#bb66ff', '#9933ff', '#6600cc'], // purple
   ];
 
   const [selectedColor, setSelectedColor] = useState(null);
 
+  const frecuencias = ["Cada dia", "cada 3 dias","cada 5 dias"]
+  const [selAlta, setSelAlta] = useState(frecuencias[0])
+  const [selMedia, setSelMedia] = useState(frecuencias[1])
+  const [selBaja, setSelBaja] = useState(frecuencias[2])
 
-  // Recordatorios
-  const cerrarTodosDropdowns = () => {
+  const notificar = ["12 horas antes","1 dia antes","2 dias antes"]
+  const [selNotiApp, setSelNotiApp] = useState(notificar[1])
 
-  };
+
+
+  const verificar = () =>{
+    console.log(nombre)
+    console.log(nombre == "")
+    if( nombre == "") return false
+    return true
+  }
 
   const guardar = async () => {
 
     console.log("Guardar")
-    
 
     const nuevo = {
       nombre,
       color,
       notas
+    }
+
+    if(!verificar()) {
+      setVisible(false)
+      setErrorMsg("La materia debe tener un nombre")
+      setNotiVisible(true)
+      return;
     }
 
     let respuesta
@@ -102,9 +113,23 @@ export default function SettingsScreen({ navigation, route }) {
   }
 
   const modificar = async () => {
-
     console.log("modificar")
     console.log(materiaSel)
+
+    if(materiaSel=="") {
+      setVisible(false)
+      setErrorMsg("Debe seleccionar una materia para modificar")
+      setNotiVisible(true)
+      return;
+    }
+
+    if(!verificar()) {
+      setVisible(false)
+      setErrorMsg("La materia debe tener un nombre")
+      setNotiVisible(true)
+      return;
+    }
+
 
     const nuevo = {
       nombre,
@@ -121,7 +146,21 @@ export default function SettingsScreen({ navigation, route }) {
     }
   }
 
+ 
   const eliminar = async() => {
+
+    const enUso = tareas.some((tarea)   =>
+    tarea.materias.includes(Number(materiaSel)));
+
+
+    if (enUso) {
+      console.log("materia en uso")
+      setErrorMsg("Esta materia se encuentra en uso por una o mas tareas")
+      setEliminarVisible(false)
+      setNotiVisible(true)
+      return;
+    }
+
     let respuesta
 
     respuesta = await eliminarMateriaPI(materiaSel)
@@ -134,7 +173,9 @@ export default function SettingsScreen({ navigation, route }) {
   const cargar = async () => {
      setLoading(true);
      const data = await obtenerMaterias();
+     const tareaData = await obtenerTareas();
      setMaterias(data || localMaterias);
+     setTareas(tareaData||"");
      setLoading(false);
   };
   
@@ -149,12 +190,12 @@ export default function SettingsScreen({ navigation, route }) {
     <View style={styles.container}>
       <View style={styles.topbar}>
         <Text style={styles.barText}>Panel de configuracion</Text>
-        <Pressable onPress={() => navigation.goBack()} style={styles.closeBtn}>
-          <Text style={styles.closeBtnText}>✕</Text>
-        </Pressable>
+          <Pressable onPress={()=> navigation.goBack()}>
+            <Image source={require('../assets/Close.png')} style={{width:65,height:65, tintColor:'#fff', marginLeft:5}}/>
+          </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} onTouchStart={cerrarTodosDropdowns}>
+      <ScrollView contentContainerStyle={styles.scroll} >
 
         {/* ── USUARIO ── */}
         <Text style={styles.seccionTitulo}>Usuario</Text>
@@ -185,36 +226,73 @@ export default function SettingsScreen({ navigation, route }) {
         <Text style={styles.seccionTitulo}>Recordatorios</Text>
         <View style={styles.card}>
           <Text style={styles.campoLabel}>Notificar tarea:</Text>
-          <Dropdown
-            
-          />
+              <Picker style={styles.inputField}
+                selectedValue={selNotiApp}
+                onValueChange={(itemValue) => setSelNotiApp(itemValue)}
+              >
+                {notificar.map((item) => (
+                    <Picker.Item
+                        key={item}
+                        label={item}
+                        value={item}
+                    />
+                ))}
+            </Picker>
 
           <Text style={[styles.campoLabel, { marginTop: 12, fontWeight: 'bold' }]}>Frecuencia</Text>
 
           <View style={styles.frecuenciaFila}>
-            <Text style={styles.frecuenciaLabel}>Prioridad baja:</Text>
+            <Text style={styles.campoLabel}>Prioridad baja:</Text>
             <View style={{ flex: 1 }}>
-              <Dropdown
-                
-              />
+              <Picker
+                style={styles.inputField}
+                selectedValue={selBaja}
+                onValueChange={(itemValue) => setSelAlta(itemValue)}
+              >
+                {frecuencias.map((item) => (
+                    <Picker.Item
+                        key={item}
+                        label={item}
+                        value={item}
+                    />
+                ))}
+            </Picker>
             </View>
           </View>
 
           <View style={styles.frecuenciaFila}>
-            <Text style={styles.frecuenciaLabel}>Prioridad media:</Text>
+            <Text style={styles.campoLabel}>Prioridad media:</Text>
             <View style={{ flex: 1 }}>
-              <Dropdown
-                
-              />
+              <Picker style={styles.inputField}
+                selectedValue={selMedia}
+                onValueChange={(itemValue) => setSelMedia(itemValue)}
+              >
+                {frecuencias.map((item) => (
+                    <Picker.Item
+                        key={item}
+                        label={item}
+                        value={item}
+                    />
+                ))}
+            </Picker>
             </View>
           </View>
 
           <View style={styles.frecuenciaFila}>
-            <Text style={styles.frecuenciaLabel}>Prioridad alta:</Text>
+            <Text style={styles.campoLabel}>Prioridad alta:</Text>
             <View style={{ flex: 1 }}>
-              <Dropdown
-                
-              />
+              <Picker style={styles.inputField}
+                selectedValue={selAlta}
+                onValueChange={(itemValue) => setSelAlta(itemValue)}
+              >
+                {frecuencias.map((item) => (
+                    <Picker.Item
+                        key={item}
+                        label={item}
+                        value={item}
+                    />
+                ))}
+            </Picker>
             </View>
           </View>
         </View>
@@ -262,7 +340,7 @@ export default function SettingsScreen({ navigation, route }) {
           style={({ pressed }) => [styles.buttonOut, { marginTop: 0 }, pressed && { backgroundColor: '#eee' }]}
           onPress={() => setEliminarVisible(true)}
         >
-          <Text style={styles.buttonOutText}>Eliminar materia</Text>
+          <Text style={[styles.buttonOutText,{padding:10}]}>Eliminar materia</Text>
         </Pressable>
 
       </ScrollView>
@@ -270,16 +348,16 @@ export default function SettingsScreen({ navigation, route }) {
       <Modal transparent={true} visible={visible} animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.popup}>
-            <View style={[styles.topbar, {width:'100%'}]}>
-              <Text style={[styles.barText]}>Nueva tarea</Text>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Nueva materia</Text>
             </View>
             
             <View style={{padding:20, gap:10}}>
-              <Text>Nombre de la tarea:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Nombre de la tarea:</Text>
             <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}
               onChangeText={setNombre}
             />
-              <Text>Nombre de la tarea:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Nombre de la tarea:</Text>
               {colorGroups.map((group, groupIndex) => (
                 <View key={groupIndex} style={styles.row}>
 
@@ -293,9 +371,8 @@ export default function SettingsScreen({ navigation, route }) {
                 </View>
               ))}
             </View>      
-
             <View style={styles.previewContainer}>
-              <Text>Selecionado:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Selecionado:</Text>
               <View
                 style={[
                   styles.preview,
@@ -305,10 +382,10 @@ export default function SettingsScreen({ navigation, route }) {
             </View>
             <View style={[styles.botonesRow,{padding:10}]}>
               <Pressable onPress={guardar} style={styles.buttonPri}>
-                <Text>Crear</Text>
+                <Text style={styles.buttonText}>Crear</Text>
               </Pressable>
-              <Pressable style={[styles.buttonPri]} onPress={() => setVisible(false)}>
-                <Text>Cancelar</Text>
+              <Pressable style={[styles.buttonSec]} onPress={() => setVisible(false)}>
+                <Text style={styles.buttonText}>Cancelar</Text>
               </Pressable>
             </View>
             
@@ -319,7 +396,7 @@ export default function SettingsScreen({ navigation, route }) {
       <Modal transparent={true} visible={modificarVisible} animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.popup}>
-            <View style={[styles.topbar, {width:'100%'}]}>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
               <Text style={[styles.barText]}>Modificar tarea</Text>
             </View>
 
@@ -337,11 +414,11 @@ export default function SettingsScreen({ navigation, route }) {
                     />
                   ))}      
               </Picker>
-              <Text>Nombre de la tarea:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Nombre de la materia:</Text>
             <TextInput placeholder='Nombre de tarea' placeholderTextColor='#7e7a7a' style ={styles.inputField}
               onChangeText={setNombre}
             />
-              <Text>Nombre de la tarea:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Color de la materia:</Text>
               {colorGroups.map((group, groupIndex) => (
                 <View key={groupIndex} style={styles.row}>
 
@@ -357,7 +434,7 @@ export default function SettingsScreen({ navigation, route }) {
             </View>      
 
             <View style={styles.previewContainer}>
-              <Text>Selecionado:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Selecionado:</Text>
               <View
                 style={[
                   styles.preview,
@@ -367,10 +444,10 @@ export default function SettingsScreen({ navigation, route }) {
             </View>
             <View style={[styles.botonesRow,{padding:10}]}>
               <Pressable onPress={modificar} style={styles.buttonPri}>
-                <Text>Modificar</Text>
+                <Text style={styles.buttonText}>Modificar</Text>
               </Pressable>
-              <Pressable style={[styles.buttonPri]} onPress={() => setVisible(false)}>
-                <Text>Cancelar</Text>
+              <Pressable style={[styles.buttonSec]} onPress={() => setModificarVisible(false)}>
+                <Text style={styles.buttonText}>Cancelar</Text>
               </Pressable>
             </View>
             
@@ -382,12 +459,12 @@ export default function SettingsScreen({ navigation, route }) {
       <Modal transparent={true} visible={eliminarVisible} animationType="fade">
         <View style={styles.overlay}>
           <View style={[styles.popup,{margin:50}]}>
-            <View style={[styles.topbar, {width:'100%'}]}>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
               <Text style={[styles.barText]}>Eliminar materia</Text>
             </View>
 
             <View style={{padding:20, gap:10}}>
-              <Text>Seleccione materia a eliminar:</Text>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>Seleccione materia a eliminar:</Text>
               <Picker style ={styles.inputField}
               selectedValue={materiaSel}
               onValueChange={(itemValue) =>{setMateriaSel(itemValue)}}>
@@ -401,17 +478,34 @@ export default function SettingsScreen({ navigation, route }) {
                     />
                   ))}      
               </Picker>
-              <Text>(Para eliminar la materia, asegurese de que tareas existente no tengan tareas con esa materia, esta accion no se puede deshacer)</Text>
+              <Text style={[styles.campoLabel, {color:'#b90000'}]}>(Para eliminar la materia, asegurese de que tareas existente no tengan tareas con esa materia, esta accion no se puede deshacer)</Text>
             </View>      
             <View style={[styles.botonesRow,{padding:10}]}>
               <Pressable onPress={eliminar} style={styles.buttonPri}>
-                <Text>Eliminar</Text>
+                <Text style={styles.buttonText}>Eliminar</Text>
               </Pressable>
-              <Pressable style={[styles.buttonPri]} onPress={() => setEliminarVisible(false)}>
-                <Text>Cancelar</Text>
+              <Pressable style={[styles.buttonSec]} onPress={() => setEliminarVisible(false)}>
+                <Text style={styles.buttonText}>Cancelar</Text>
               </Pressable>
             </View>
-            
+          </View>
+        </View>
+      </Modal>
+
+      <Modal transparent={true} visible={notiVisible} animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.popup}>
+            <View style={[styles.modalTopbar, {width:'100%'}]}>
+              <Text style={[styles.barText]}>Error</Text>
+            </View>
+
+            <View style={{padding:20, gap:10}}>
+              <Text style={[styles.campoLabel, {color:'#000000'}]}>{errorMsg}</Text>
+
+            </View>      
+            <Pressable onPress={()=>setNotiVisible(false)} style={[styles.buttonPri,{margin:20}]}>
+                <Text style={[styles.buttonText, {padding:10}]}>Cerrar</Text>
+              </Pressable>    
           </View>
         </View>
       </Modal>
@@ -420,6 +514,19 @@ export default function SettingsScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+
+  modalTopbar: {
+    zIndex: 1,
+    top:0,
+    alignItems:'stretch',
+    width:'100%',
+    height: 70,
+    backgroundColor: '#37CDD8',        
+    alignItems:'center',
+    flexDirection:'row',
+    padding:20, 
+    justifyContent:'space-between'
+  },
 
   row: {
     flexDirection: 'row',
@@ -464,7 +571,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  container: { flex: 1, backgroundColor: '#e2e2e2' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#e2e2e2' 
+  },
   topbar: {
     height: 70,
     backgroundColor: '#37CDD8',
@@ -473,18 +583,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
-  barText:      { fontFamily: 'Arial', fontSize: 22, color: '#fff' },
-  closeBtn:     { padding: 6 },
-  closeBtnText: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
-  scroll:       { padding: 20, gap: 12, paddingBottom: 40 },
+
+  barText:{
+      fontFamily: 'Inter_400Regular',
+      fontSize: 25,
+      color: '#fff',
+  },
+  scroll:{ 
+    padding: 20, 
+    gap: 12, 
+    paddingBottom: 40 
+  },
 
   seccionTitulo: {
-    fontFamily: 'Arial',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#222',
-    marginTop: 8,
+    fontFamily: 'Inter_700Bold',
+    fontSize: 25,
   },
   card: {
     backgroundColor: '#eee',
@@ -494,9 +607,22 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 8,
   },
-  campoLabel: { fontFamily: 'Arial', fontSize: 14, color: '#666' },
-  campoValor: { fontFamily: 'Arial', fontSize: 16, fontWeight: 'bold', color: '#222' },
-  separador:  { borderBottomWidth: 1, borderBottomColor: '#c4c4c4', marginVertical: 4 },
+  campoLabel: { 
+    fontFamily: 'Inter_400Regular',
+    fontSize: 18,
+    color: '#666' 
+  },
+  campoValor: { 
+    fontFamily: 'Inter_300Light',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0f0f0f' 
+  },
+  separador:  { 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#c4c4c4', 
+    marginVertical: 4 
+  },
 
   botonesRow: { flexDirection: 'row', gap: 10 },
 
@@ -534,17 +660,26 @@ const styles = StyleSheet.create({
   },
   buttonOut: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#c4c4c4',
+    borderWidth: 2,
+    borderColor: '#0f5337',
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
     backgroundColor: '#fff',
-    marginTop: 4,
   },
-  buttonText:    { color: '#fff', fontSize: 14, fontWeight: 'bold', fontFamily: 'Arial', textAlign: 'center' },
-  buttonOutText: { color: '#555', fontSize: 14, fontFamily: 'Arial' },
+  buttonText: { 
+    fontFamily: 'Inter_400Regular',
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center' 
+  },
+  buttonOutText: { 
+    fontFamily: 'Inter_400Regular',
+    fontSize: 18,
+    color: '#363636',
+    textAlign: 'center' 
+  },
 
   // Dropdown
   selectBtn: {
@@ -627,24 +762,6 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
   },
-  modalTitulo:      { color: '#fff', fontSize: 18, fontWeight: 'bold', fontFamily: 'Arial' },
-  modalTituloOscuro:{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', fontFamily: 'Arial', color: '#222' },
-  modalTexto: {
-    fontFamily: 'Arial',
-    fontSize: 14,
-    color: '#555',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-
-
-    textLarge:{
-        fontFamily: 'Inter_700Bold',
-        fontSize: 25,
-        color: '#fff',
-    },
-
-  label:      { fontFamily: 'Arial', fontSize: 14, color: '#444', marginTop: 4 },
   inputField: {
     borderWidth: 1,
     borderColor: '#c4c4c4',
@@ -655,7 +772,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     fontFamily: 'Arial',
   },
-  coloresRow:             { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
-  colorCirculo:           { width: 32, height: 32, borderRadius: 16 },
-  colorCirculoSeleccionado: { borderWidth: 3, borderColor: '#333' },
 });

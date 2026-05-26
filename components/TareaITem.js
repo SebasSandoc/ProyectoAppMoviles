@@ -31,15 +31,15 @@ const [fontsLoaded] = useFonts({
         });
 
     return (
-        <View style={styles.list}>
-            
+        <Pressable onPress={onVer}>
+        <View style={styles.list}>           
             <Text style={styles.nameText}>{tarea.nombre}</Text>
             <Text style={styles.text}>{fechaFormato}</Text>
             <Image source={require('../assets/Circle.png')} style={{width:20, height:20, tintColor:color}}/>
             
-                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>
-                       
+                <Image source={require('../assets/Chevron.png')} style={{width:10, height:20, tintColor:'lightGray'}}/>  
         </View>
+        </Pressable> 
     )
 }
 

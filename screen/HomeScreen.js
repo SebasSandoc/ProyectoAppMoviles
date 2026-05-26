@@ -61,7 +61,7 @@ export default function HomeScreen({navigation}){
             
             <View style={{marginTop:20}}>
               {tareasNoFinalizadas.length === 0 ? (
-                <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas pendientes</Text>
+                <Text style={[styles.text, {fontFamily:'Inter_500Medium',fontSize:20, textAlign:'center'}]}>No hay tareas finalizads recientes</Text>
               ) :(
                 <FlatList
                   data={tareasNoFinalizadas}

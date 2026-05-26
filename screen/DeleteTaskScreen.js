@@ -34,7 +34,7 @@ export default function DeleteTaskScreen({route,navigation}){
         } style={styles.ButtonPrimary}>
             <Text style={styles.textButton}>ELIMINAR</Text>
         </Pressable>
-        <Pressable onPress={()=> navigation.goBack()} style={styles.ButtonPrimary}>
+        <Pressable onPress={()=> navigation.goBack()} style={styles.buttonSec}>
             <Text style={styles.textButton}>Cancelar</Text>
         </Pressable>
     </View>
@@ -43,10 +43,23 @@ export default function DeleteTaskScreen({route,navigation}){
 }
 
 const styles = StyleSheet.create({
+
+    buttonSec: {
+        fontFamily: 'Inter_400Regular',
+        backgroundColor: '#39C3B7',
+        height: 45,
+        padding:20,
+        paddingTop:30,
+        paddingBottom:30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+    },    
     container:{
         justifyContent:'center',
         alignItems:'center',
-        flex:1
+        flex:1,
+        gap:10
     },
     textButton:{
         fontFamily:'Inter_500Medium',
@@ -62,7 +75,7 @@ const styles = StyleSheet.create({
     },
     ButtonPrimary:{
         
-        backgroundColor: '#34994F',
+        backgroundColor: '#993434',
         padding:20,
         fontFamily: 'Inter_400Regular',
         fontSize: 18,
