@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, Button, Image, StyleSheet, Pressable } from 'react-native'
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
+//componente para mostrar tareas pendientes en la pantalla dashboard 
+
 export default function TareaItem({ tarea, onVer }) {
 const [fontsLoaded] = useFonts({
         Inter_400Regular,

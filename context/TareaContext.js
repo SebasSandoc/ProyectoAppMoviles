@@ -2,6 +2,8 @@ import React, {createContext, useState} from 'react';
 
 export const TareaContext = createContext();
 
+//Contexto de tarea (Fuera de uso, reemplazado con la base de datos firebase)
+
 export const TareaProvider = ({children}) => {
 
     const [agenda, setAgenda] = useState([]);

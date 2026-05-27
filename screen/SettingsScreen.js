@@ -31,23 +31,34 @@ function Dropdown({ valor, opciones, visible, onToggle, onSeleccionar }) {
 
 export default function SettingsScreen({ navigation, route }) {
 
+  //constaste lista para cerrar sesion
   const { logout } = useContext(AuthContext);
 
+  //contexto de usuario y datos
   const {usuario} = useContext(AuthContext);
-  const[loading,setLoading] = useState(true);
 
+  //constante de carga
+  const[loading,setLoading] = useState(true);
+  //mensaje de error
   const [errorMsg,setErrorMsg] = useState("")
 
+  //materias obtenidas de firebase
   const [materias,setMaterias] = useState([])
+  //tareas obtenidas de firebase
   const [tareas,setTareas] = useState([])
-
+  //materias seleccionada para modificar o eliminar
   const [materiaSel,setMateriaSel] = useState("")
 
+  //control de visibilidad de popup de nueva materia
   const [visible,setVisible] = useState(false)
+   //control de visibilidad de popup de modificar materia
   const [modificarVisible,setModificarVisible] = useState(false)
+   //control de visibilidad de popup de eliminar materia
   const [eliminarVisible,setEliminarVisible] = useState(false)
+   //control de visibilidad de popup de alerta
   const [notiVisible,setNotiVisible] = useState(false);
 
+  //entrada de usuario para materias
   const [nombre,setNombre] = useState("")
   const [color,setColor] = useState("")
   const [notas,setNotas] = useState("")
@@ -59,26 +70,34 @@ export default function SettingsScreen({ navigation, route }) {
     Inter_300Light,
   });
 
+  //colores disponibles para crear materias
   const colorGroups = [
     ['#c9f1f3', '#7edfe6', '#71d7df', '#3bcad4', '#06b5c2'], 
-    ['#ccffcc', '#99ff99', '#66ff66', '#33cc33', '#009900'], // green
-    ['#ccccff', '#9999ff', '#6666ff', '#3333ff', '#0000cc'], // blue
-    ['#ffe3cc', '#ffbe99', '#ffab66', '#ff8800', '#cc5c00'], // yellow
-    ['#f0ccff', '#d699ff', '#bb66ff', '#9933ff', '#6600cc'], // purple
+    ['#ccffcc', '#99ff99', '#66ff66', '#33cc33', '#009900'], 
+    ['#ccccff', '#9999ff', '#6666ff', '#3333ff', '#0000cc'], 
+    ['#ffe3cc', '#ffbe99', '#ffab66', '#ff8800', '#cc5c00'], 
+    ['#f0ccff', '#d699ff', '#bb66ff', '#9933ff', '#6600cc'], 
   ];
 
+  //color seleccionado
   const [selectedColor, setSelectedColor] = useState(null);
 
+  //frecuencias disponibles
   const frecuencias = ["Cada dia", "cada 3 dias","cada 5 dias"]
+
+  //frecuencias seleccionadas
   const [selAlta, setSelAlta] = useState(frecuencias[0])
   const [selMedia, setSelMedia] = useState(frecuencias[1])
   const [selBaja, setSelBaja] = useState(frecuencias[2])
 
+  //notificaciones disponibles
   const notificar = ["12 horas antes","1 dia antes","2 dias antes"]
+
+  //notificacion seleccionada
   const [selNotiApp, setSelNotiApp] = useState(notificar[1])
 
 
-
+  //verificar campos para materias
   const verificar = () =>{
     console.log(nombre)
     console.log(nombre == "")
@@ -86,6 +105,7 @@ export default function SettingsScreen({ navigation, route }) {
     return true
   }
 
+  //crear nuevas materias
   const guardar = async () => {
 
     console.log("Guardar")
@@ -112,6 +132,7 @@ export default function SettingsScreen({ navigation, route }) {
     }
   }
 
+  //modificar materia existente
   const modificar = async () => {
     console.log("modificar")
     console.log(materiaSel)
@@ -146,13 +167,13 @@ export default function SettingsScreen({ navigation, route }) {
     }
   }
 
- 
+  //eliminar materia
   const eliminar = async() => {
 
     const enUso = tareas.some((tarea)   =>
     tarea.materias.includes(Number(materiaSel)));
 
-
+    //si la materia esta registrada en una tarea no se puede eliminar
     if (enUso) {
       console.log("materia en uso")
       setErrorMsg("Esta materia se encuentra en uso por una o mas tareas")
@@ -170,6 +191,7 @@ export default function SettingsScreen({ navigation, route }) {
     }
   }
 
+  //carga de datos
   const cargar = async () => {
      setLoading(true);
      const data = await obtenerMaterias();
@@ -179,10 +201,12 @@ export default function SettingsScreen({ navigation, route }) {
      setLoading(false);
   };
   
+  //estado de carga
   useEffect(() => {
      cargar();
   }, []);
   
+  //esperar a que la carga finalice
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
   
 

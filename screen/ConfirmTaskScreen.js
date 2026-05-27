@@ -1,6 +1,8 @@
 import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
+//pantalla de confirmacion de acciones
+
 export default function ConfirmTaskScreen({route,navigation}){
 
     const [fontsLoaded] = useFonts({
@@ -10,8 +12,10 @@ export default function ConfirmTaskScreen({route,navigation}){
     Inter_300Light
   })
 
+  //estado de la accion realizada en la pagina anterior
   const passed = true
 
+  //elementos visuales
   return(
     <View style={styles.container}>
         {passed ? (

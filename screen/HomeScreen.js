@@ -7,6 +7,8 @@ import { obtenerTareas } from '../services/tareaService';
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
+//Pantalla de inicio, contiene lista de tareas pendientes y finalizadas con acceso a las pantallas principales
+
 export default function HomeScreen({navigation}){
 
   const [fontsLoaded] = useFonts({
@@ -16,14 +18,14 @@ export default function HomeScreen({navigation}){
     Inter_300Light
   })
 
-  //const tPendientes = tareas.filter(t => !t.finalizada);
-  //const tFinalizadas = tareas.filter(t => t.finalizada);
+  //lista de tareas obtenidas de Firebase
   const[tareas,setTareas] = useState([]);
+  //constante de estado de carga de datos
   const[loading,setLoading] = useState(true);
-  const {usuario} = useContext(AuthContext)
+  //usuario obtenido del contexto de autorizacion
+  const {usuario} = useContext(AuthContext);
 
-  console.log({usuario})
-
+  //carga de datos de Firebase
   const cargar = async () => {
     setLoading(true);
     const data = await obtenerTareas();
@@ -31,22 +33,25 @@ export default function HomeScreen({navigation}){
     setLoading(false);
   };
 
+  //estado de carga
   useEffect(() => {
     cargar();
   }, []);
 
+  //dividir la lista de tareas en finalizadas y no finalizadas
+
   const tareasFinalizadas = tareas.filter(
     tarea => tarea.finalizada
   )
-
   const tareasNoFinalizadas = tareas.filter(
     tarea => !tarea.finalizada
   )
 
+  //esperar a que carguen los datos
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
 
-
+    //elementos visuales
     return(
       <View style={styles.container}>
         <View style={styles.topbar}>

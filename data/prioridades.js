@@ -1,3 +1,6 @@
+
+//prioridades inmutables 
+//variable frecuencia no esta en uso
 export const prioridades = [
     {
         nombre: "Alta",

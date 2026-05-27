@@ -9,12 +9,16 @@ import { obtenerMaterias } from '../services/materiaService';
 
 import { Calendar } from "react-native-calendars";
 
+//ventana para crear nueva tarea
 
 export default function NewTaskScreen({route,navigation}){
 
+    //sin uso
     const tarea = route.params?.tarea
 
+    //constante de materias obtenidas de firebase
     const [materias,setMaterias] = useState([])
+    //constante de control de carga
     const[loading,setLoading] = useState(true);
 
 
@@ -25,8 +29,8 @@ export default function NewTaskScreen({route,navigation}){
         Inter_300Light
     })
 
-    //const {agregarTarea} = useContext(TareaContext)
-
+    
+    //constante de datos ingresado por el usuario
     const [nombre, setNombre] = useState( "");
     const [fechaMax, setFechaMax] = useState("");
     const [notas, setNotas] = useState("");
@@ -35,17 +39,22 @@ export default function NewTaskScreen({route,navigation}){
     const [finalizada, setFinalizada] = useState(false)
     const [hora,setHora] = useState("")
     const [minuto,setMinuto] = useState("")
-
     const [materiaArray,setMateriaArray] =useState([]);
 
+    //constante de control de visibilidad de popup de calendario
     const [calendarioVisible, setCalendarioVisible] = useState(false)
+    //constante de control de visibilidad de popup de alerta
     const [notiVisible, setNotiVisible] = useState(false)
+    //formato de fecha
     const [fecha, setFecha] = useState(null)
 
+    //texto de mensaje de error
     const [errorMsg, setErrorMsg] = useState("")
 
+    //fecha de error
     const hoy = new Date().toISOString().split("T")[0]
 
+    //agregar nueva materia seleccionada del dropdown
     const agregarMateria = (materiaId) =>{
 
         const id = Number(materiaId);
@@ -61,6 +70,7 @@ export default function NewTaskScreen({route,navigation}){
         setMateriaArray([...materiaArray,id]);
     };
 
+    //eliminar materia de la lista selecionada del dropdown
     const eliminarMateria = (id) => {
         
         setMateriaArray(
@@ -69,6 +79,7 @@ export default function NewTaskScreen({route,navigation}){
 
     }
 
+    //verificar campos vacios
     const verificar = () => {
 
         console.log(nombre)
@@ -105,6 +116,7 @@ export default function NewTaskScreen({route,navigation}){
         return true
     }
 
+    //crear nueva materia
     const guardar = async () => {
 
         console.log(materiaArray)
@@ -117,7 +129,6 @@ export default function NewTaskScreen({route,navigation}){
             return
         }
 
-        //const fechaFormateada = `${fechaMax}T12:00:00Z`;
         const fechaFormateada = `${fecha}T${hora}:${minuto}:59Z`;
 
         console.log(fechaFormateada)
@@ -141,6 +152,7 @@ export default function NewTaskScreen({route,navigation}){
         }
     }
 
+    //carga de datos de firebase
     const cargar = async () => {
         setLoading(true);
         const data = await obtenerMaterias();
@@ -148,10 +160,12 @@ export default function NewTaskScreen({route,navigation}){
         setLoading(false);
     };
     
+    //control de carga
     useEffect(() => {
         cargar();
     }, []);
   
+    //esperar que la carga finalice
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
     return(

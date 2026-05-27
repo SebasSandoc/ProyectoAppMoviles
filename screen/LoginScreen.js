@@ -2,13 +2,18 @@ import { useContext, useState } from 'react';
 import {View, Text, Button, StyleSheet, TextInput, Pressable,Image,ScrollView, Alert } from 'react-native'
 import { AuthContext } from '../context/AuthContext';
 
-export default function LoginScreen({navigation}){
+//pantalla de inicio de sesion de usuario
 
+export default function LoginScreen({navigation}){
+    
+    //constantes de entradas de texto
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     
+    //constante de autorizacion
     const {login} = useContext(AuthContext);
 
+    //manejar login
     const loginManage=  async () => {
         const ok = login(email, password);
 
@@ -17,7 +22,7 @@ export default function LoginScreen({navigation}){
         }
     };
 
-
+    //elementos visuales
     return(
         <View>
             <View style={styles.topbar}>

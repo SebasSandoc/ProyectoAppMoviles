@@ -7,7 +7,9 @@ import { useContext, useEffect, useState } from 'react';
 import { TareaContext } from '../context/TareaContext';
 import { obtenerTareas } from '../services/tareaService';
 
+//pantalla de calendario
 
+//configuracion de idioma
 LocaleConfig.locales['es'] = {
   monthNames: [
     'Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -28,15 +30,19 @@ LocaleConfig.defaultLocale = 'es';
 
 export default function CalendarScreen({navigation}){
 
+    //colores a mostrar por prioridad de las tareas
     const prioridadColor = {
         Baja: "#2ecc71",
         Media: "#f1c40f",
         Alta: "#e74c3c"
     };
     
+    //contexto de agenda (fuera de uso al implementar firebase)
     const {agenda} = useContext(TareaContext)
 
+    //tareas obtenidas de firebase
     const [tareas, setTareas] = useState([]);
+    //carga de pagina
     const [loading, setLoading] = useState(true);
 
 
@@ -47,35 +53,40 @@ export default function CalendarScreen({navigation}){
         Inter_300Light
     })
 
-  const events = { }
+    //lista de eventos para mostrar en el calendario
+    const events = { }
 
-    
+    //lista de tareas para el calendario  
     const listaTareas =[...tareas]
 
-  listaTareas.forEach((tarea) =>{
-    const fecha = tarea.fechaMax.split("T")[0];
+    //agregar lista de tareas en el calendario
+    listaTareas.forEach((tarea) =>{
+        const fecha = tarea.fechaMax.split("T")[0];
 
-    if(!events[fecha]) {
-        events[fecha] = []
-    }
+        if(!events[fecha]) {
+            events[fecha] = []
+        }
 
-    events[fecha].push(tarea)
-  })
+        events[fecha].push(tarea)
+    })
 
-  const cargar = async () => {
-    setLoading(true);
-    const data = await obtenerTareas();
-    setTareas(data || localTareas);
-    setLoading(false);
-  };
+    //carga de datos
+    const cargar = async () => {
+        setLoading(true);
+        const data = await obtenerTareas();
+        setTareas(data || localTareas);
+        setLoading(false);
+    };
 
-  useEffect(() => {
-    cargar();
-  }, []);
+    //Estado de carga
+    useEffect(() => {
+        cargar();
+    }, []);
 
-  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+    //esperar que la pagina cargue
+    if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
-
+    //elementos visuales
     return(
         <View style={styles.container}>
             <View style={styles.topbar}>

@@ -1,6 +1,8 @@
 import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, FlatList} from 'react-native'
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 
+//pantalla confirmacion de registro de usuario
+
 export default function ConfirmRegisterScreen({route,navigation}){
 
     const [fontsLoaded] = useFonts({
@@ -10,8 +12,10 @@ export default function ConfirmRegisterScreen({route,navigation}){
     Inter_300Light
   })
 
+  //resultado del registro de la pagina de registro anterior
   const passed = true
 
+  //elementos visuales
   return(
     <View style={styles.container}>
         {passed ? (

@@ -1,6 +1,8 @@
 const BASE_URL = "http://127.0.0.1:8080/tareas";
 
+//manejo de conexion con Kotlin de taras
 
+//manejar respuesta
 const handleResponse = async (res) => {
   const text = await res.text();
 
@@ -19,7 +21,7 @@ const handleResponse = async (res) => {
   return data;
 };
 
-// GET - Obtener productos
+// GET - Obtener tareas
 export const obtenerTareas = async () => {
   try {
     const res = await fetch(BASE_URL);
@@ -30,7 +32,7 @@ export const obtenerTareas = async () => {
   }
 };
 
-// POST - Crear producto
+// POST - Crear tarea
 export const crearTarea = async (tarea) => {
   try {
 
@@ -79,7 +81,7 @@ export const crearTarea = async (tarea) => {
   }
 };
 
-// PUT - Actualizar producto
+// PUT - Actualizar tarea
 export const actualizarTarea = async (id, tarea) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}`, {
@@ -124,7 +126,7 @@ export const marcarFinalizada = async (tarea) => {
   }
 }
 
-// DELETE - Eliminar producto
+// DELETE - Eliminar tarea
 export const eliminarTareaAPI = async (id) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}`, {

@@ -7,13 +7,12 @@ import { Picker } from '@react-native-picker/picker';
 import { actualizarUsuario, crearUsuario } from '../services/usuarioService';
 import { AuthContext } from '../context/AuthContext';
 
-
+//pantalla de modificacion de datos de usuario
 
 export default function UpdateProfileScreen({route,navigation}){
 
+    //contexto de usuario
     const {usuario} = useContext(AuthContext);
-
-    console.log(usuario)
 
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -22,17 +21,20 @@ export default function UpdateProfileScreen({route,navigation}){
         Inter_300Light
     })
 
-    //const {agregarTarea} = useContext(TareaContext)
-
+    
+    //visibilidad de popup de alerta
     const [notiVisible, setNotiVisible] = useState(false)
+    //mensaje de error
     const [errorMsg,setErrorMsg] = useState("");
 
+    //manejo de datos ingresado por el usuario
     const [nombre, setNombre] = useState(usuario.nombre || "");
     const [correo, setCorreo] = useState(usuario.correo || "");
     const [contrasenia, setContransenia] = useState("");
     const [newContrasenia, setNewContransenia] = useState("");
     const [confirmar, setConfirmar] = useState("");
-  
+    
+    //verificar campos vacios
     const verificar = () =>{
         if (nombre == "") return false
         if (correo == "") return false
@@ -40,7 +42,9 @@ export default function UpdateProfileScreen({route,navigation}){
         return true
     }
 
-
+    //metodo para actualizar datos
+    //para modificar datos el usuario debe ingresar la contraseña, puede dejar los campos de nueva contraseña vacios
+    //si desea cambiar la contraseña debe llenar estos campos tambien
     const guardar = async () => {
 
         if (!verificar()){
@@ -48,7 +52,6 @@ export default function UpdateProfileScreen({route,navigation}){
             setTimeout(() => {
                 setNotiVisible(true);
             }, 0);
-            //setNotiVisible(true)
             return
         }
 

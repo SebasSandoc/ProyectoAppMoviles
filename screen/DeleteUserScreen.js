@@ -4,6 +4,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import { eliminarUsuarioAPI } from '../services/usuarioService';
 
+//Pantalla para confirmar si el usuario desea borrar su usuario
+
 export default function DeleteUserScreen({navigation}){
 
     const [fontsLoaded] = useFonts({
@@ -13,9 +15,11 @@ export default function DeleteUserScreen({navigation}){
         Inter_300Light
     })
 
+    //constanste de usuario y logout obtenidas por el contexto de autorizacion
     const {usuario} = useContext(AuthContext);
     const { logout } = useContext(AuthContext);
 
+    //metodo de eliminar, si finaliza correctamente, el usuario se elimina y desloguea
     const eliminar = async  () => {
         let eliminado
 
@@ -24,13 +28,12 @@ export default function DeleteUserScreen({navigation}){
                 
         if (eliminado) {
             console.log("creada correctamente")
-            //navigation.navigate("ConfirmTask")
             logout()
         }
 
     }
 
- 
+    //elementos visuales
     return(
     <View style={styles.container}>
         <Text style={styles.text}>¿Esta seguro de eliminar su perdir? esta accion no se puede deshacer</Text>

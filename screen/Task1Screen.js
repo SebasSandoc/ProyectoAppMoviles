@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { obtenerMaterias } from '../services/materiaService';
 import { marcarFinalizada } from '../services/tareaService';
 
+//pantalla de tarea, mostrada los datos de la tarea que se paso en la pantalla anterior
 
 export default function Task1creen({route,navigation}){
 
@@ -17,11 +18,14 @@ export default function Task1creen({route,navigation}){
         Inter_300Light
     })
 
+    //constante de carga
     const [loading,setLoading] = useState(true)
+    //materias obtenidas de firebase
     const [materias,setMaterias] = useState([])
-
+    //tarea pasada por la pantalla anterior
     const {tarea} = route.params;
 
+    //bloque para obtener dias restantes o pasados de la fecha limite
     const fechaTarea = new Date(tarea.fechaMax)
     const hoy = new Date();
 
@@ -30,6 +34,7 @@ export default function Task1creen({route,navigation}){
 
     const fecha = new Date(tarea.fechaMax)
 
+    //formato de fecha
     const fechaFormato = fecha.
         toLocaleString("es-ES", {
             weekday: "long",
@@ -42,7 +47,8 @@ export default function Task1creen({route,navigation}){
              timeZone: "UTC"
         });
 
-
+    
+    
     const prioridadColor = {
     Baja: "#2ecc71",
     Media: "#f1c40f",
@@ -60,6 +66,7 @@ export default function Task1creen({route,navigation}){
 
     const colorborde = prioridadColorBorde[tarea.prioridad] || "#999"
 
+    //metodo para marca la tarea como hecha
     const marcarComoHecha = async() =>{
         const marcada = await marcarFinalizada(tarea);
 
@@ -69,17 +76,20 @@ export default function Task1creen({route,navigation}){
         }
     }
 
+    //carga de datos
     const cargar = async () => {
         setLoading(true);
         const data = await obtenerMaterias();
         setMaterias(data || localMaterias);
         setLoading(false);
     };
-        
+    
+    //estado de carga
     useEffect(() => {
         cargar();
     }, []);
       
+    //esperar a que la carga finalice
     if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
     return(

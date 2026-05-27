@@ -3,6 +3,8 @@ import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Lig
 import { useContext, useState, useEffect } from 'react';
 import { crearUsuario, obtenerUsuarios } from '../services/usuarioService';
 
+//pantalla de registro de nuevo usuario
+
 export default function RegisterScreen({navigation}){
 
   const [fontsLoaded] = useFonts({
@@ -12,18 +14,22 @@ export default function RegisterScreen({navigation}){
     Inter_300Light
   })
 
+  //mensaje de error a mostrar
   const [errorMsg,setErrorMsg] = useState("")
 
+  //datos ingresados por el usuario
   const [usuarios,setUsuarios] = useState([]);
   const [nombre,setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [contrasenia, setContrasenia] = useState("");
   const [confirmar, setConfirmar] = useState("");
 
+  //constante de carga
   const[loading,setLoading] = useState(true);
+  //control de visibilidad de popup de error
   const[notiVisible,setNotiVisible] =useState(false);
 
-
+  //verificar si hay datos vacios
   const verificar = () => {
     if (nombre == "") return false
     if (correo == "") return false
@@ -33,6 +39,7 @@ export default function RegisterScreen({navigation}){
     return true
   }
 
+  //crear nuevo usuario
   const guardar = async () => {
 
     if (!verificar()){
@@ -73,17 +80,20 @@ export default function RegisterScreen({navigation}){
     }
   }
 
+  //carga de datos
   const cargar = async () => {
       setLoading(true);
       const data = await obtenerUsuarios();
       setUsuarios(data || null);
       setLoading(false);
   };
-    
+  
+  //estado de carga
     useEffect(() => {
         cargar();
     }, []);
   
+  //esperar a que finalice la carga
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
     return(

@@ -1,6 +1,8 @@
 const BASE_URL = "http://127.0.0.1:8080/usuarios";
 
+//manejo de conexion Kotlin de usuarios
 
+//manejar respuesta
 const handleResponse = async (res) => {
   const text = await res.text();
 
@@ -35,7 +37,7 @@ export const obtenerUsuarioCorreo = async (correo) => {
     }
 }
 
-// GET - Obtener productos
+// GET - Obtener usuarios
 export const obtenerUsuarios = async () => {
   try {
     const res = await fetch(BASE_URL);
@@ -46,7 +48,7 @@ export const obtenerUsuarios = async () => {
   }
 };
 
-// POST - Crear producto
+// POST - Crear usuario
 export const crearUsuario = async (usuario) => {
   try {
 
@@ -92,7 +94,7 @@ export const crearUsuario = async (usuario) => {
   }
 };
 
-// PUT - Actualizar producto
+// PUT - Actualizar usuario
 export const actualizarUsuario = async (id, usuario) => {
   try {
     console.log(id)
@@ -116,7 +118,7 @@ export const actualizarUsuario = async (id, usuario) => {
   }
 };
 
-// DELETE - Eliminar producto
+// DELETE - Eliminar usuario
 export const eliminarUsuarioAPI = async (id) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}`, {

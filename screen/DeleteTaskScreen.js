@@ -2,19 +2,22 @@ import {StyleSheet, Text, View, ScrollView, Image, SafeAreaView, Pressable, Flat
 import { useFonts,Inter_400Regular, Inter_500Medium, Inter_700Bold, Inter_300Light } from '@expo-google-fonts/inter';
 import { eliminarTareaAPI } from '../services/tareaService';
 
+//pantalla para que el usuario confirme si desea borrar una tarea
+
 export default function DeleteTaskScreen({route,navigation}){
 
+    //recibe la tarea a eliminar pasada por la pagina anterior
     const tarea = route.params?.tarea
     console.log(tarea)
 
     const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_700Bold,
-    Inter_300Light
-  })
+        Inter_400Regular,
+        Inter_500Medium,
+        Inter_700Bold,
+        Inter_300Light
+    })
 
- 
+ //elementos visuales
   return(
     <View style={styles.container}>
         <Text style={styles.text}>¿Esta seguro de eliminar esta tarea? esta accion no se puede deshacer</Text>

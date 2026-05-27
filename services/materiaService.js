@@ -1,6 +1,8 @@
 const BASE_URL = "http://127.0.0.1:8080/materias";
 
+//manejo de conexion con Kotlin de materias
 
+//manejar respuesta
 const handleResponse = async (res) => {
   const text = await res.text();
 
@@ -19,7 +21,7 @@ const handleResponse = async (res) => {
   return data;
 };
 
-// GET - Obtener productos
+//GET - obtener materias
 export const obtenerMaterias = async () => {
   try {
     const res = await fetch(BASE_URL);
@@ -30,7 +32,7 @@ export const obtenerMaterias = async () => {
   }
 };
 
-// POST - Crear producto
+// POST - Crear materia
 export const crearMateria = async (materia) => {
   try {
 
@@ -71,7 +73,7 @@ export const crearMateria = async (materia) => {
   }
 };
 
-// PUT - Actualizar producto
+// PUT - Actualizar materia
 export const actualizarMateria = async (id, materia) => {
 
 
@@ -94,7 +96,7 @@ export const actualizarMateria = async (id, materia) => {
   }
 };
 
-// DELETE - Eliminar producto
+// DELETE - Eliminar materia
 export const eliminarMateriaPI = async (id) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}`, {

@@ -1,3 +1,5 @@
+//tareas locales en caso de las extraidas de la base de datos fallen
+
 export const tareas = [
     {
         id: 1,

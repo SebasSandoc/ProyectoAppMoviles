@@ -1,3 +1,5 @@
+
+//data de materias locales en caso de las extraidas por la base de datos falle
 export const materias = [
     {
         id: 1,

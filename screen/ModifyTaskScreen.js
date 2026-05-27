@@ -9,13 +9,16 @@ import { obtenerMaterias } from '../services/materiaService';
 
 import { Calendar } from "react-native-calendars";
 
-
+//pantalla para modificar tarea obtenida por la pantalla de tarea
 
 export default function ModifyTaskScreen({route,navigation}){
 
+    //tarea pasada por la pantalla anterior
     const tarea = route.params?.tarea
 
+    //lista de materias obtenidas de firebase
     const [materias,setMaterias] = useState([])
+    //constante de carga de datos
     const [loading,setLoading] = useState(true);
 
 
@@ -28,6 +31,7 @@ export default function ModifyTaskScreen({route,navigation}){
 
     //const {agregarTarea} = useContext(TareaContext)
 
+    //constantes de entrada por el usuario
     const [nombre, setNombre] = useState(tarea.nombre);
     const [notas, setNotas] = useState(tarea?.notas||"");
     const [prioridad, setPrioridad] = useState(tarea?.prioridad || "");
@@ -37,15 +41,20 @@ export default function ModifyTaskScreen({route,navigation}){
     const [minuto,setMinuto] = useState(tarea?.fechaMax.split(":")[1]||"")
     const [materiaArray,setMateriaArray] =useState(tarea.materias||[]);
 
+    //constante de popup de calendario
     const [calendarioVisible, setCalendarioVisible] = useState(false)
+    //constante de formato de fecha ingresada
     const [fecha, setFecha] = useState(tarea.fechaMax.split("T")[0] ||null)
 
+    //fecha de hoy
     const hoy = new Date().toISOString().split("T")[0]
 
+    //metodo para agregar materia del dropdown
     const agregarMateria = (materiaId) =>{
 
-        const id = Number(materiaId);
 
+        const id = Number(materiaId);
+        
         if (materiaId== 0)  {return}
 
         setMateriaSel(id);
@@ -57,6 +66,7 @@ export default function ModifyTaskScreen({route,navigation}){
         setMateriaArray([...materiaArray,id]);
     };
 
+    //metodo para eliminar materia de las seleccionadas en el dropdown
     const eliminarMateria = (id) => {
         
         setMateriaArray(
@@ -65,6 +75,7 @@ export default function ModifyTaskScreen({route,navigation}){
 
     }
 
+    //verificar si los datos ingresados estan vacios
     const verificar = () => {
 
         console.log(nombre)
@@ -102,6 +113,7 @@ export default function ModifyTaskScreen({route,navigation}){
         return true
     }
 
+    //metodo para actualizar tarea
     const guardar = async () => {
 
        if(!verificar()){
